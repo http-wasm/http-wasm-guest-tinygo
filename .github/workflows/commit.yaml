@@ -67,7 +67,7 @@ jobs:
           echo "/usr/local/tinygo/bin" >> $GITHUB_PATH
 
       - name: "Set up wasmtime"
-        run: |  # TinyGo currently requires wasmtime to execute `tingo test -target=wasi ...`
+        run: |  # TinyGo currently requires wasmtime to execute `tinygo test -target=wasi ...`
           curl https://wasmtime.dev/install.sh -sSf | bash
           echo "$HOME/.wasmtime/bin" >> $GITHUB_PATH
 
