@@ -24,7 +24,7 @@ $(golangci_lint_path):
 	@go install $(golangci_lint)
 
 .PHONY: lint
-lint:
+lint: $(golangci_lint_path)
 	@CGO_ENABLED=0 $(golangci_lint_path) run --timeout 5m
 	@CGO_ENABLED=0 $(golangci_lint_path) run --build-tags tinygo.wasm --timeout 5m
 
