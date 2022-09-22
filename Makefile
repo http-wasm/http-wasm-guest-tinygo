@@ -8,8 +8,7 @@ test:
 
 .PHONY: test.e2e
 test.e2e:
-	@cd internal/e2e
-	@go test ./... -v -timeout 120s
+	@cd internal && go test ./... -v -timeout 120s
 
 tinygo_sources := $(wildcard internal/e2e/*/*.go)
 PHONY: build.e2e

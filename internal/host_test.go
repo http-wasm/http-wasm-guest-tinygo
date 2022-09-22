@@ -14,7 +14,7 @@ import (
 func instantiateHost(t *testing.T, r wazero.Runtime) (*host, api.Closer) {
 	h := &host{t: t}
 	// Export host functions (in the order defined in https://github.com/http-wasm/http-wasm-abi)
-	if host, err := r.NewModuleBuilder("httpwasm").
+	if host, err := r.NewModuleBuilder("http").
 		ExportFunction("log", h.log,
 			"log", "ptr", "size").
 		Instantiate(testCtx, r); err != nil {
