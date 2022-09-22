@@ -1,6 +1,6 @@
 //go:build !tinygo.wasm
 
-package http_wasm
+package httpwasm
 
 // log is stubbed for compilation outside TinyGo
 func log(ptr uintptr, size uint32) {}

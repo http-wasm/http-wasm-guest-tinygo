@@ -1,7 +1,7 @@
 //go:build tinygo.wasm
 
-package http_wasm
+package httpwasm
 
-//go:wasm-module http_wasm
+//go:wasm-module httpwasm
 //go:export log
 func log(ptr uintptr, size uint32)

@@ -1,4 +1,4 @@
-package http_wasm
+package httpwasm
 
 import "github.com/tetratelabs/tinymem"
 
