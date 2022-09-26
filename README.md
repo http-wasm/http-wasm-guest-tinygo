@@ -4,6 +4,9 @@
 
 # http-wasm Guest Library for TinyGo
 
-This is a TinyGo library that implements the guest side of [HTTP WebAssembly Middleware][1]
+[http-wasm][1] is HTTP server middleware implemented in [WebAssembly][1].
+This is a TinyGo library that implements the [guest ABI][2].
 
-[1]: https://github.com/http-wasm/http-wasm-abi
+[1]: https://github.com/http-wasm
+[2]: https://webassembly.org/
+[3]: https://github.com/http-wasm/http-wasm-abi
