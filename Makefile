@@ -34,7 +34,7 @@ format:
 	    awk '/^import \($$/,/^\)$$/{if($$0=="")next}{print}' $$f > /tmp/fmt; \
 	    mv /tmp/fmt $$f; \
 	done
-	@go run $(goimports) -w -local github.com/tetratelabs/tinymem `find . -name '*.go'`
+	@go run $(goimports) -w -local github.com/http-wasm/http-wasm-guest-tinygo `find . -name '*.go'`
 
 .PHONY: check
 check:
