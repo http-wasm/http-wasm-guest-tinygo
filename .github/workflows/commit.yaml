@@ -32,9 +32,17 @@ jobs:
       - uses: actions/checkout@v3
 
       - uses: actions/setup-go@v3
-        with:
+        with:  # Not cache: true because we also cache go-build and golangci-lint
           go-version: ${{ matrix.go-version }}
-          cache: true
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/.cache/golangci-lint
+            ~/go/pkg/mod
+            ~/go/bin
+          key: check-${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum', 'Makefile') }}
 
       - run: make check
 
@@ -50,11 +58,9 @@ jobs:
           - "0.25.0"  # Latest
 
     steps:
-      - name: "Checkout"
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: "Set up Go"
-        uses: actions/setup-go@v3
+      - uses: actions/setup-go@v3
         with:
           go-version: ${{ matrix.go-version }}
           cache: true
@@ -71,8 +77,6 @@ jobs:
           curl https://wasmtime.dev/install.sh -sSf | bash
           echo "$HOME/.wasmtime/bin" >> $GITHUB_PATH
 
-      - name: "Test"
-        run: make test
+      - run: make test
 
-      - name: "Test End-to-End"
-        run: make build.e2e test.e2e
+      - run: make build.e2e test.e2e

@@ -5,6 +5,6 @@ go 1.18
 
 require github.com/http-wasm/http-wasm-guest-tinygo v0.0.0
 
-require github.com/tetratelabs/tinymem v0.0.0-20220915050904-ad295349ecf4 // indirect
+require github.com/tetratelabs/tinymem v0.1.0 // indirect
 
 replace github.com/http-wasm/http-wasm-guest-tinygo => ../../

@@ -5,15 +5,18 @@ package internal_test
 import (
 	"context"
 	_ "embed"
+	"fmt"
+	"io"
 	"log"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path"
 	"testing"
 
+	httpwasm "github.com/http-wasm/http-wasm-host-go"
+	nethttp "github.com/http-wasm/http-wasm-host-go/handler/nethttp"
 	"github.com/stretchr/testify/require"
-	"github.com/tetratelabs/wazero"
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
 )
 
 // testCtx is an arbitrary, non-default context. Non-nil also prevents linter errors.
@@ -22,15 +25,20 @@ var testCtx = context.WithValue(context.Background(), struct{}{}, "arbitrary")
 var guestWasm map[string][]byte
 
 const (
-	guestWasmLog = "log"
+	guestWasmExample = "example"
+	guestWasmLog     = "log"
 )
 
 // TestMain ensures we can read the test wasm prior to running e2e tests.
 func TestMain(m *testing.M) {
-	wasms := []string{guestWasmLog}
+	wasms := []string{guestWasmExample, guestWasmLog}
 	guestWasm = make(map[string][]byte, len(wasms))
 	for _, name := range wasms {
-		if wasm, err := os.ReadFile(path.Join("e2e", name, "main.wasm")); err != nil {
+		p := path.Join("e2e", name, "main.wasm")
+		if name == guestWasmExample {
+			p = path.Join("..", name, "main.wasm")
+		}
+		if wasm, err := os.ReadFile(p); err != nil {
 			log.Panicln(err)
 		} else {
 			guestWasm[name] = wasm
@@ -39,51 +47,77 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func testLog(t *testing.T, guest api.Module, host *host) {
-	// main invokes Log
-	require.Equal(t, []string{"msg", "msg1", "msg"}, host.consoleLogMessages)
-}
-
 func Test_EndToEnd(t *testing.T) {
 	type testCase struct {
-		name  string
-		guest []byte
-		test  func(t *testing.T, guest api.Module, host *host)
+		name    string
+		request func(url string) (*http.Request, error)
+		next    http.Handler
+		test    func(t *testing.T, content []byte, logMessages []string)
 	}
 
 	tests := []testCase{
 		{
-			name:  "Log",
-			guest: guestWasm[guestWasmLog],
-			test:  testLog,
+			name: guestWasmExample,
+			request: func(url string) (*http.Request, error) {
+				url = fmt.Sprintf("%s/v1.0/hi", url)
+				return http.NewRequest(http.MethodGet, url, nil)
+			},
+			next: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				r.Header.Set("Content-Type", "text/plain")
+				w.Write([]byte(r.URL.Path)) // nolint
+			}),
+			test: func(t *testing.T, content []byte, logMessages []string) {
+				// Ensure the handler saw the re-written path.
+				require.Equal(t, "/v1.0/hello", string(content))
+			},
 		},
-	}
-
-	// Create a new WebAssembly Runtime.
-	r := wazero.NewRuntimeWithConfig(testCtx, wazero.NewRuntimeConfig().
-		// WebAssembly 2.0 allows use of any version of TinyGo, including 0.24+.
-		WithWasmCore2())
-	defer r.Close(testCtx) // This closes everything this Runtime created.
-
-	// Instantiate WASI, which implements system I/O such as console output and
-	// is required for `tinygo build -target=wasi`
-	if _, err := wasi_snapshot_preview1.Instantiate(testCtx, r); err != nil {
-		t.Errorf("Error instantiating WASI - %v", err)
+		{
+			name: guestWasmLog,
+			request: func(url string) (*http.Request, error) {
+				return http.NewRequest(http.MethodGet, url, nil)
+			},
+			next: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(200)
+			}),
+			test: func(t *testing.T, content []byte, logMessages []string) {
+				require.Equal(t, []string{"before", "after"}, logMessages)
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		tc := tt
 		t.Run(tc.name, func(t *testing.T) {
-			h, cleanup := instantiateHost(t, r)
-			defer cleanup.Close(testCtx)
+			var logMessages []string
+			logger := func(_ context.Context, message string) { logMessages = append(logMessages, message) }
 
-			g, err := r.InstantiateModuleFromBinary(testCtx, tc.guest)
+			// Configure and compile the WebAssembly guest binary. In this case, it is
+			// a logging interceptor.
+			mw, err := nethttp.NewMiddleware(testCtx, guestWasm[tc.name], httpwasm.Logger(logger))
 			if err != nil {
-				t.Errorf("Error instantiating waPC guest - %v", err)
+				t.Error(err)
 			}
-			defer g.Close(testCtx)
+			defer mw.Close(testCtx)
 
-			tc.test(t, g, h)
+			// Wrap the test handler with one implemented in WebAssembly.
+			wrapped, err := mw.NewHandler(testCtx, tc.next)
+			require.NoError(t, err)
+			defer wrapped.Close(testCtx)
+
+			// Start the server with the wrapped handler.
+			ts := httptest.NewServer(wrapped)
+			defer ts.Close()
+
+			// Make a client request and invoke the test.
+			req, err := tc.request(ts.URL)
+			require.NoError(t, err)
+
+			resp, err := http.DefaultClient.Do(req)
+			require.NoError(t, err)
+			defer resp.Body.Close()
+
+			content, _ := io.ReadAll(resp.Body)
+			tc.test(t, content, logMessages)
 		})
 	}
 }

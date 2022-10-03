@@ -10,7 +10,7 @@ test:
 test.e2e:
 	@cd internal && go test ./... -v -timeout 120s
 
-tinygo_sources := $(wildcard internal/e2e/*/*.go)
+tinygo_sources := example/main.go $(wildcard internal/e2e/*/*.go)
 PHONY: build.e2e
 build.e2e: $(tinygo_sources)
 	@for f in $^; do \
@@ -41,6 +41,8 @@ check:
 	@$(MAKE) lint
 	@$(MAKE) format
 	@go mod tidy
+	@(cd internal; go mod tidy)
+	@(cd internal/e2e; go mod tidy)
 	@if [ ! -z "`git status -s`" ]; then \
 		echo "The following differences will fail CI until committed:"; \
 		git diff --exit-code; \
