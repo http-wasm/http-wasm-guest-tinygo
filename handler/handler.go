@@ -9,7 +9,7 @@ import (
 // HandleFn is the entry-point function which defaults to Next.
 var HandleFn func() = Next
 
-// handle isn't exported to avoid end users invoking it.
+// handle is only exported to the host.
 //
 //go:export handle
 func handle() { //nolint
