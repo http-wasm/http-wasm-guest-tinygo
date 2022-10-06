@@ -8,14 +8,28 @@ test:
 
 .PHONY: test.e2e
 test.e2e:
-	@cd internal && go test ./... -v -timeout 120s
+	@cd internal/e2e && go test ./... -v -timeout 120s
 
-tinygo_sources := example/main.go $(wildcard internal/e2e/*/*.go)
-PHONY: build.e2e
-build.e2e: $(tinygo_sources)
+.PHONY: build.e2e
+build.e2e:
+	@$(MAKE) build.tinygo
+	@$(MAKE) build.wat
+
+tinygo_sources := example/main.go $(wildcard internal/test/testdata/*/*.go) $(wildcard internal/test/testdata/bench/tinygo/*/*.go)
+build.tinygo: $(tinygo_sources)
 	@for f in $^; do \
 	    tinygo build -o $$(echo $$f | sed -e 's/\.go/\.wasm/') -scheduler=none --no-debug -target=wasi $$f; \
 	done
+
+wat_sources := $(wildcard internal/test/testdata/bench/wat/*.wat)
+build.wat: $(wat_sources)
+	@for f in $^; do \
+	    wat2wasm -o $$(echo $$f | sed -e 's/\.wat/\.wasm/') --debug-names $$f; \
+	done
+
+.PHONY: bench
+bench:
+	@(cd internal/e2e; go test -run=NONE -bench=. .)
 
 golangci_lint_path := $(shell go env GOPATH)/bin/golangci-lint
 
