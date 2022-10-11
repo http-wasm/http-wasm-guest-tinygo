@@ -20,11 +20,11 @@ var BinExample = func() []byte {
 //go:embed testdata/log/main.wasm
 var BinLog []byte
 
-//go:embed testdata/bench/tinygo/get_path/main.wasm
-var BinBenchGetPathTinyGo []byte
+//go:embed testdata/bench/tinygo/get_uri/main.wasm
+var BinBenchGetURITinyGo []byte
 
-//go:embed testdata/bench/wat/get_path.wasm
-var BinBenchGetPathWat []byte
+//go:embed testdata/bench/wat/get_uri.wasm
+var BinBenchGetURIWat []byte
 
 //go:embed testdata/bench/tinygo/get_request_header/main.wasm
 var BinBenchGetRequestHeaderTinyGo []byte
@@ -50,11 +50,11 @@ var BinBenchSendResponseTinyGo []byte
 //go:embed testdata/bench/wat/send_response.wasm
 var BinBenchSendResponseWat []byte
 
-//go:embed testdata/bench/tinygo/set_path/main.wasm
-var BinBenchSetPathTinyGo []byte
+//go:embed testdata/bench/tinygo/set_uri/main.wasm
+var BinBenchSetURITinyGo []byte
 
-//go:embed testdata/bench/wat/set_path.wasm
-var BinBenchSetPathWat []byte
+//go:embed testdata/bench/wat/set_uri.wasm
+var BinBenchSetURIWat []byte
 
 //go:embed testdata/bench/tinygo/set_response_header/main.wasm
 var BinBenchSetResponseHeaderTinyGo []byte

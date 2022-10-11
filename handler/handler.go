@@ -25,22 +25,22 @@ func Log(message string) {
 	log(ptr, size)
 }
 
-// GetPath returns the request path.
-func GetPath() string {
-	size := getPath(0, 0)
+// GetURI returns the request path.
+func GetURI() string {
+	size := getURI(0, 0)
 	if size == 0 {
 		return ""
 	}
 	buf := make([]byte, size)
 	ptr := uintptr(unsafe.Pointer(&buf[0]))
-	_ = getPath(ptr, size)
+	_ = getURI(ptr, size)
 	return string(buf)
 }
 
-// SetPath overwrites the request path with the current value.
-func SetPath(path string) {
+// SetURI overwrites the request path with the current value.
+func SetURI(path string) {
 	ptr, size := tinymem.StringToPtr(path)
-	setPath(ptr, size)
+	setURI(ptr, size)
 }
 
 // GetRequestHeader returns the value of the given request header name or false
@@ -76,5 +76,6 @@ func SetResponseHeader(name, value string) {
 func SendResponse(statusCode uint32, body []byte) {
 	bodyPtr := uintptr(unsafe.Pointer(&body[0])) // TODO: tinymem.SliceToPtr
 	bodySize := uint32(len(body))
-	sendResponse(statusCode, bodyPtr, bodySize)
+	setStatusCode(statusCode)
+	setResponseBody(bodyPtr, bodySize)
 }
