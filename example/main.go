@@ -7,8 +7,8 @@ func main() {
 }
 
 func rewrite() {
-	if handler.GetURI() == "/v1.0/hi" {
-		handler.SetURI("/v1.0/hello")
+	if handler.GetURI() == "/v1.0/hi?name=panda" {
+		handler.SetURI("/v1.0/hello?name=teddy")
 	}
 	handler.Next()
 }

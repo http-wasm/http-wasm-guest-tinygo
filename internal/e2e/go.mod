@@ -1,4 +1,4 @@
-module github.com/http-wasm/http-wasm-guest-tinygo/internal
+module github.com/http-wasm/http-wasm-guest-tinygo/e2e
 
 go 1.18
 
