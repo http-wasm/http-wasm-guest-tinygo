@@ -33,16 +33,16 @@ func Test_EndToEnd(t *testing.T) {
 			name: "example",
 			bin:  BinExample,
 			request: func(url string) (*http.Request, error) {
-				url = fmt.Sprintf("%s/v1.0/hi", url)
+				url = fmt.Sprintf("%s/v1.0/hi?name=panda", url)
 				return http.NewRequest(http.MethodGet, url, nil)
 			},
 			next: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				r.Header.Set("Content-Type", "text/plain")
-				w.Write([]byte(r.URL.Path)) // nolint
+				w.Write([]byte(r.URL.String())) // nolint
 			}),
 			test: func(t *testing.T, content []byte, logMessages []string) {
 				// Ensure the handler saw the re-written path.
-				require.Equal(t, "/v1.0/hello", string(content))
+				require.Equal(t, "/v1.0/hello?name=teddy", string(content))
 			},
 		},
 		{

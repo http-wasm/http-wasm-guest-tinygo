@@ -30,8 +30,8 @@ var benches = map[string]struct {
 }{
 	"get_path": {
 		bins: map[string][]byte{
-			"TinyGo": BinBenchGetPathTinyGo,
-			"wat":    BinBenchGetPathWat,
+			"TinyGo": BinBenchGetURITinyGo,
+			"wat":    BinBenchGetURIWat,
 		},
 		newRequest: func() *http.Request {
 			return readOnlyRequest
@@ -78,8 +78,8 @@ var benches = map[string]struct {
 		}},
 	"setPath": {
 		bins: map[string][]byte{
-			"TinyGo": BinBenchSetPathTinyGo,
-			"wat":    BinBenchSetPathWat,
+			"TinyGo": BinBenchSetURITinyGo,
+			"wat":    BinBenchSetURIWat,
 		},
 		newRequest: func() *http.Request {
 			return &http.Request{URL: &url.URL{}}

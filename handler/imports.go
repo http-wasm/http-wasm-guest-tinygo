@@ -7,12 +7,12 @@ package handler
 func log(ptr uintptr, size uint32)
 
 //go:wasm-module http-handler
-//go:export get_path
-func getPath(ptr uintptr, limit uint32) uint32
+//go:export get_uri
+func getURI(ptr uintptr, limit uint32) uint32
 
 //go:wasm-module http-handler
-//go:export set_path
-func setPath(ptr uintptr, size uint32)
+//go:export set_uri
+func setURI(ptr uintptr, size uint32)
 
 //go:wasm-module http-handler
 //go:export get_request_header
@@ -27,5 +27,9 @@ func next()
 func setResponseHeader(namePtr uintptr, nameSize uint32, valuePtr uintptr, valueSize uint32)
 
 //go:wasm-module http-handler
-//go:export send_response
-func sendResponse(statusCode uint32, bodyPtr uintptr, bodySize uint32)
+//go:export set_status_code
+func setStatusCode(statusCode uint32)
+
+//go:wasm-module http-handler
+//go:export set_response_body
+func setResponseBody(bodyPtr uintptr, bodySize uint32)

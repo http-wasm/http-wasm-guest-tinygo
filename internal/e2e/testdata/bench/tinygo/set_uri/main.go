@@ -3,9 +3,9 @@ package main
 import "github.com/http-wasm/http-wasm-guest-tinygo/handler" //nolint
 
 func main() {
-	handler.HandleFn = getPath
+	handler.HandleFn = setURI
 }
 
-func getPath() {
-	_ = handler.GetPath()
+func setURI() {
+	handler.SetURI("/v1.0/hello")
 }
