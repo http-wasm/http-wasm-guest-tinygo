@@ -14,6 +14,8 @@ import (
 	httpwasm "github.com/http-wasm/http-wasm-host-go"
 	nethttp "github.com/http-wasm/http-wasm-host-go/handler/nethttp"
 	"github.com/stretchr/testify/require"
+
+	"github.com/http-wasm/http-wasm-guest-tinygo/internal/test"
 )
 
 // testCtx is an arbitrary, non-default context. Non-nil also prevents linter errors.
@@ -31,7 +33,7 @@ func Test_EndToEnd(t *testing.T) {
 	tests := []testCase{
 		{
 			name: "example",
-			bin:  BinExample,
+			bin:  test.BinExample,
 			request: func(url string) (*http.Request, error) {
 				url = fmt.Sprintf("%s/v1.0/hi?name=panda", url)
 				return http.NewRequest(http.MethodGet, url, nil)
@@ -47,7 +49,7 @@ func Test_EndToEnd(t *testing.T) {
 		},
 		{
 			name: "log",
-			bin:  BinLog,
+			bin:  test.BinLog,
 			request: func(url string) (*http.Request, error) {
 				return http.NewRequest(http.MethodGet, url, nil)
 			},

@@ -55,7 +55,7 @@ jobs:
         go-version:  # Note: Go only supports 2 versions: https://go.dev/doc/devel/release#policy
           - "1.18"
         tinygo-version:  # Note: TinyGo only supports latest: https://github.com/tinygo-org/tinygo/releases
-          - "0.25.0"  # Latest
+          - "0.26.0"  # Latest
 
     steps:
       - uses: actions/checkout@v3
@@ -67,7 +67,7 @@ jobs:
 
       - name: "Set up wat2wasm"
         run: |  # Needed for build.wat. wabt includes wat2wasm.
-          wabt_version=1.0.29
+          wabt_version=1.0.30
           wabt_url=https://github.com/WebAssembly/wabt/releases/download/${wabt_version}/wabt-${wabt_version}-ubuntu.tar.gz
           curl -sSL ${wabt_url} | tar --strip-components 2 -C /usr/local/bin -xzf - wabt-${wabt_version}/bin/wat2wasm
 

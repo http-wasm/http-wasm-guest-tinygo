@@ -8,6 +8,8 @@ import (
 	"testing"
 
 	nethttp "github.com/http-wasm/http-wasm-host-go/handler/nethttp"
+
+	"github.com/http-wasm/http-wasm-guest-tinygo/internal/test"
 )
 
 var (
@@ -28,66 +30,74 @@ var benches = map[string]struct {
 	bins       map[string][]byte
 	newRequest func() *http.Request
 }{
-	"get_path": {
+	"log": {
 		bins: map[string][]byte{
-			"TinyGo": BinBenchGetURITinyGo,
-			"wat":    BinBenchGetURIWat,
+			"TinyGo": test.BinBenchLogTinyGo,
+			"wat":    test.BinBenchLogWat,
 		},
 		newRequest: func() *http.Request {
 			return readOnlyRequest
 		}},
+	"get_uri": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinBenchGetURITinyGo,
+			"wat":    test.BinBenchGetURIWat,
+		},
+		newRequest: func() *http.Request {
+			return readOnlyRequest
+		}},
+	"set_uri": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinBenchSetURITinyGo,
+			"wat":    test.BinBenchSetURIWat,
+		},
+		newRequest: func() *http.Request {
+			return &http.Request{URL: &url.URL{}}
+		}},
 	"get_request_header exists": {
 		bins: map[string][]byte{
-			"TinyGo": BinBenchGetRequestHeaderTinyGo,
-			"wat":    BinBenchGetRequestHeaderWat,
+			"TinyGo": test.BinBenchGetRequestHeaderTinyGo,
+			"wat":    test.BinBenchGetRequestHeaderWat,
 		},
 		newRequest: func() *http.Request {
 			return readOnlyRequestWithHeader
 		}},
 	"get_request_header not exists": {
 		bins: map[string][]byte{
-			"TinyGo": BinBenchGetRequestHeaderTinyGo,
-			"wat":    BinBenchGetRequestHeaderWat,
-		},
-		newRequest: func() *http.Request {
-			return readOnlyRequest
-		}},
-	"log": {
-		bins: map[string][]byte{
-			"TinyGo": BinBenchLogTinyGo,
-			"wat":    BinBenchLogWat,
+			"TinyGo": test.BinBenchGetRequestHeaderTinyGo,
+			"wat":    test.BinBenchGetRequestHeaderWat,
 		},
 		newRequest: func() *http.Request {
 			return readOnlyRequest
 		}},
 	"next": {
 		bins: map[string][]byte{
-			"TinyGo": BinBenchNextTinyGo,
-			"wat":    BinBenchNextWat,
+			"TinyGo": test.BinBenchNextTinyGo,
+			"wat":    test.BinBenchNextWat,
 		},
 		newRequest: func() *http.Request {
 			return readOnlyRequest
 		}},
-	"sendResponse": {
+	"set_status_code": {
 		bins: map[string][]byte{
-			"TinyGo": BinBenchSendResponseTinyGo,
-			"wat":    BinBenchSendResponseWat,
+			"TinyGo": test.BinBenchSetStatusCodeTinyGo,
+			"wat":    test.BinBenchSetStatusCodeWat,
 		},
 		newRequest: func() *http.Request {
 			return readOnlyRequest
 		}},
-	"setPath": {
+	"set_response_header": {
 		bins: map[string][]byte{
-			"TinyGo": BinBenchSetURITinyGo,
-			"wat":    BinBenchSetURIWat,
+			"TinyGo": test.BinBenchSetResponseHeaderTinyGo,
+			"wat":    test.BinBenchSetResponseHeaderWat,
 		},
 		newRequest: func() *http.Request {
-			return &http.Request{URL: &url.URL{}}
+			return readOnlyRequest
 		}},
-	"setResponseHeader": {
+	"write_response_body": {
 		bins: map[string][]byte{
-			"TinyGo": BinBenchSetResponseHeaderTinyGo,
-			"wat":    BinBenchSetResponseHeaderWat,
+			"TinyGo": test.BinBenchWriteResponseBodyTinyGo,
+			"wat":    test.BinBenchWriteResponseBodyWat,
 		},
 		newRequest: func() *http.Request {
 			return readOnlyRequest
