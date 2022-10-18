@@ -12,8 +12,8 @@ test.e2e:
 
 .PHONY: build.e2e
 build.e2e:
-	@$(MAKE) build.tinygo
 	@$(MAKE) build.wat
+	@$(MAKE) build.tinygo
 
 tinygo_sources := example/main.go $(wildcard internal/test/testdata/*/*.go) $(wildcard internal/test/testdata/bench/tinygo/*/*.go)
 build.tinygo: $(tinygo_sources)

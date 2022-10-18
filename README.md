@@ -13,22 +13,26 @@ The following is an [example](example) of rewriting the incoming request path.
 ```go
 package main
 
-import "github.com/http-wasm/http-wasm-guest-tinygo/handler"
+import (
+	"github.com/http-wasm/http-wasm-guest-tinygo/handler"
+	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
+)
 
 func main() {
 	handler.HandleFn = rewrite
 }
 
-func rewrite() {
-	if handler.GetPath() == "/v1.0/hi" {
-		handler.SetPath("/v1.0/hello")
+func rewrite(req api.Request, _ api.Response, next api.Next) {
+	if req.GetURI() == "/v1.0/hi?name=panda" {
+		req.SetURI("/v1.0/hello?name=teddy")
 	}
-	handler.Next()
+	next()
 }
+
 ```
 
 Note: This is not a redirect as the rewrite happens in-memory before the real
-handler (`next`) takes over.
+handler (`next()`) takes over.
 
 If you make changes, you can rebuild it like so:
 ```sh
