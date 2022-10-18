@@ -15,7 +15,7 @@ type wasmHeader struct {
 	set      func(namePtr uintptr, nameSize uint32, valuePtr uintptr, valueLen uint32)
 }
 
-// compile-time check to ensure wasmHeaders implements api.Headers.
+// compile-time check to ensure wasmHeaders implements api.Header.
 var _ api.Header = (*wasmHeader)(nil)
 
 // Names implements the same method as documented on api.Request.
