@@ -1,8 +1,10 @@
 package e2e_test
 
 import (
+	"bytes"
 	"context"
 	_ "embed"
+	"io"
 	"net/http"
 	"net/url"
 	"testing"
@@ -13,18 +15,63 @@ import (
 )
 
 var (
+	readOnlyRequest                *http.Request
+	readOnlyRequestWithHeader      *http.Request
+	readOnlyRequestWithLargeHeader *http.Request
+	smallBody                      []byte
+	largeSize                      int
+	largeBody                      []byte
+)
+
+func init() {
+	smallBody = []byte("hello world")
+	largeSize = 4096 // 2x the read buffer size
+	largeBody = make([]byte, largeSize)
+	for i := 0; i < largeSize/2; i++ {
+		largeBody[i] = 'a'
+	}
+	for i := largeSize / 2; i < largeSize; i++ {
+		largeBody[i] = 'b'
+	}
 	readOnlyRequest = &http.Request{
 		Method: "GET",
 		URL:    &url.URL{Path: "/v1.0/hi"},
 		Header: http.Header{},
 	}
-
 	readOnlyRequestWithHeader = &http.Request{
 		Method: "GET",
 		URL:    &url.URL{Path: "/v1.0/hi"},
-		Header: http.Header{"Accept": {"text/plain"}},
+		Header: http.Header{
+			"Host":   {"localhost"},
+			"Accept": {"text/plain"},
+		},
 	}
-)
+	readOnlyRequestWithLargeHeader = &http.Request{
+		Method: "GET",
+		URL:    &url.URL{Path: "/v1.0/hi"},
+		Header: http.Header{
+			"Host":   {"localhost"},
+			"Accept": {"text/plain"},
+			"data":   {string(largeBody)},
+		},
+	}
+}
+
+func postSmall() *http.Request {
+	return &http.Request{
+		Method:        http.MethodPost,
+		ContentLength: int64(len(smallBody)),
+		Body:          io.NopCloser(bytes.NewReader(smallBody)),
+	}
+}
+
+func postLarge() *http.Request {
+	return &http.Request{
+		Method:        http.MethodPost,
+		ContentLength: int64(len(largeBody)),
+		Body:          io.NopCloser(bytes.NewReader(largeBody)),
+	}
+}
 
 var benches = map[string]struct {
 	bins       map[string][]byte
@@ -54,6 +101,30 @@ var benches = map[string]struct {
 		newRequest: func() *http.Request {
 			return &http.Request{URL: &url.URL{}}
 		}},
+	"get_request_header_names none": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinBenchGetRequestHeaderNamesTinyGo,
+			"wat":    test.BinBenchGetRequestHeaderNamesWat,
+		},
+		newRequest: func() *http.Request {
+			return readOnlyRequest
+		}},
+	"get_request_header_names small": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinBenchGetRequestHeaderNamesTinyGo,
+			"wat":    test.BinBenchGetRequestHeaderNamesWat,
+		},
+		newRequest: func() *http.Request {
+			return readOnlyRequestWithHeader
+		}},
+	"get_request_header_names large": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinBenchGetRequestHeaderNamesTinyGo,
+			"wat":    test.BinBenchGetRequestHeaderNamesWat,
+		},
+		newRequest: func() *http.Request {
+			return readOnlyRequestWithLargeHeader
+		}},
 	"get_request_header exists": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchGetRequestHeaderTinyGo,
@@ -70,6 +141,24 @@ var benches = map[string]struct {
 		newRequest: func() *http.Request {
 			return readOnlyRequest
 		}},
+	"read_request_body": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinBenchReadRequestBodyTinyGo,
+			"wat":    test.BinBenchReadRequestBodyWat,
+		},
+		newRequest: postSmall},
+	"read_request_body_stream small": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinBenchReadRequestBodyStreamTinyGo,
+			"wat":    test.BinBenchReadRequestBodyStreamWat,
+		},
+		newRequest: postSmall},
+	"read_request_body_stream large": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinBenchReadRequestBodyStreamTinyGo,
+			"wat":    test.BinBenchReadRequestBodyStreamWat,
+		},
+		newRequest: postLarge},
 	"next": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchNextTinyGo,
@@ -151,7 +240,7 @@ func (rw fakeResponseWriter) Write(b []byte) (int, error) {
 func (rw fakeResponseWriter) WriteHeader(statusCode int) {
 	// None of our benchmark tests should send failure status. If there's a
 	// failure, it is likely there's a problem in the test data.
-	if statusCode != 200 {
+	if statusCode == 500 {
 		panic(statusCode)
 	}
 }

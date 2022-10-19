@@ -3,7 +3,7 @@
   (import "http-handler" "set_uri"
     (func $set_uri (param i32 i32)))
 
-  (memory (export "memory") 1 (; 1 page==64KB ;))
+  (memory (export "memory") 1 1 (; 1 page==64KB ;))
   (global $uri i32 (i32.const 0))
   (data (i32.const 0) "/v1.0/hello")
   (global $uri_len i32 (i32.const 11))

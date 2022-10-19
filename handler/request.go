@@ -5,6 +5,7 @@ import (
 
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/imports"
+	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/mem"
 )
 
 var (
@@ -32,7 +33,7 @@ var _ api.Request = wasmRequest{}
 
 // GetMethod implements the same method as documented on api.Request.
 func (wasmRequest) GetMethod() string {
-	return getString(imports.GetMethod)
+	return mem.GetString(imports.GetMethod)
 }
 
 // SetMethod implements the same method as documented on api.Request.
@@ -43,7 +44,7 @@ func (wasmRequest) SetMethod(method string) {
 
 // GetURI implements the same method as documented on api.Request.
 func (wasmRequest) GetURI() string {
-	return getString(imports.GetURI)
+	return mem.GetString(imports.GetURI)
 }
 
 // SetURI implements the same method as documented on api.Request.
@@ -54,7 +55,7 @@ func (wasmRequest) SetURI(uri string) {
 
 // GetProtocolVersion implements the same method as documented on api.Request.
 func (wasmRequest) GetProtocolVersion() string {
-	return getString(imports.GetProtocolVersion)
+	return mem.GetString(imports.GetProtocolVersion)
 }
 
 // Headers implements the same method as documented on api.Request.

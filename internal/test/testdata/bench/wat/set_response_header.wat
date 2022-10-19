@@ -3,7 +3,7 @@
   (import "http-handler" "set_response_header"
     (func $set_response_header (param i32 i32 i32 i32)))
 
-  (memory (export "memory") 1 (; 1 page==64KB ;))
+  (memory (export "memory") 1 1 (; 1 page==64KB ;))
 
   (global $name i32 (i32.const 0))
   (data (i32.const 0) "Content-Type")

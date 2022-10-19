@@ -6,9 +6,9 @@ import (
 )
 
 func main() {
-	handler.HandleFn = setURI
+	handler.HandleFn = getRequestHeaderNames
 }
 
-func setURI(req api.Request, resp api.Response, next api.Next) {
-	req.SetURI("/v1.0/hello")
+func getRequestHeaderNames(req api.Request, resp api.Response, next api.Next) {
+	_ = req.Headers().Names()
 }

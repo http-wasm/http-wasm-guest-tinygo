@@ -38,11 +38,29 @@ var BinBenchSetURITinyGo []byte
 //go:embed testdata/bench/wat/set_uri.wasm
 var BinBenchSetURIWat []byte
 
+//go:embed testdata/bench/tinygo/get_request_header_names/main.wasm
+var BinBenchGetRequestHeaderNamesTinyGo []byte
+
+//go:embed testdata/bench/wat/get_request_header_names.wasm
+var BinBenchGetRequestHeaderNamesWat []byte
+
 //go:embed testdata/bench/tinygo/get_request_header/main.wasm
 var BinBenchGetRequestHeaderTinyGo []byte
 
 //go:embed testdata/bench/wat/get_request_header.wasm
 var BinBenchGetRequestHeaderWat []byte
+
+//go:embed testdata/bench/tinygo/read_request_body/main.wasm
+var BinBenchReadRequestBodyTinyGo []byte
+
+//go:embed testdata/bench/wat/read_request_body.wasm
+var BinBenchReadRequestBodyWat []byte
+
+//go:embed testdata/bench/tinygo/read_request_body_stream/main.wasm
+var BinBenchReadRequestBodyStreamTinyGo []byte
+
+//go:embed testdata/bench/wat/read_request_body_stream.wasm
+var BinBenchReadRequestBodyStreamWat []byte
 
 //go:embed testdata/bench/tinygo/next/main.wasm
 var BinBenchNextTinyGo []byte
