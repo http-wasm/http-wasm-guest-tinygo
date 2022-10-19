@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"io"
 	"unsafe"
 
 	"github.com/tetratelabs/tinymem"
 
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
+	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/mem"
 )
 
 // wasmBody implements api.Body with imported WebAssembly functions.
@@ -17,31 +19,39 @@ type wasmBody struct {
 // compile-time check to ensure wasmBody implements api.Body.
 var _ api.Body = (*wasmBody)(nil)
 
-// readBuf is sharable because there is no parallelism in wasm.
-var readBuf = make([]byte, 2048)
+// WriteTo implements the same method as documented on api.Body.
+func (b *wasmBody) WriteTo(w io.Writer) (written uint64, err error) {
+	var size uint32
+	var eof bool
+	var n int
 
-// ReadAll implements the same method as documented on api.Body.
-func (w *wasmBody) ReadAll() (result []byte) {
-	size, eof := w.Read(readBuf)
-	if size > 0 {
-		result = make([]byte, size)
-		copy(result, readBuf)
-	}
 	for !eof {
-		size, eof = w.Read(readBuf)
-		result = append(result, readBuf[0:size]...)
+		size, eof = read(b, mem.ReadBufPtr, mem.ReadBufLimit)
+		if size == 0 { // possible for zero length on EOF
+			break
+		}
+
+		n, err = w.Write(mem.ReadBuf[:size])
+		written += uint64(n)
+		if err != nil {
+			break
+		}
 	}
 	return
 }
 
 // ReadN implements the same method as documented on api.Body.
-func (w *wasmBody) Read(bytes []byte) (size uint32, eof bool) {
+func (b *wasmBody) Read(bytes []byte) (size uint32, eof bool) {
 	limit := uint32(len(bytes))
 	if limit == 0 { // invalid, but prevent crashing.
 		return 0, false
 	}
 
 	ptr := uintptr(unsafe.Pointer(&bytes[0])) // TODO: tinymem.SliceToPtr
+	return read(b, ptr, limit)
+}
+
+func read(w *wasmBody, ptr uintptr, limit uint32) (size uint32, eof bool) {
 	eofLen := w.read(ptr, limit)
 	eof = (eofLen >> 32) == 1
 	size = uint32(eofLen)
@@ -49,22 +59,22 @@ func (w *wasmBody) Read(bytes []byte) (size uint32, eof bool) {
 }
 
 // Write implements the same method as documented on api.Body.
-func (w *wasmBody) Write(bytes []byte) {
+func (b *wasmBody) Write(bytes []byte) {
 	size := uint32(len(bytes))
 	if size == 0 { // invalid, but prevent crashing.
 		return
 	}
 
 	ptr := uintptr(unsafe.Pointer(&bytes[0])) // TODO: tinymem.SliceToPtr
-	w.write(ptr, size)
+	b.write(ptr, size)
 }
 
 // WriteString implements the same method as documented on api.Body.
-func (w *wasmBody) WriteString(s string) {
+func (b *wasmBody) WriteString(s string) {
 	ptr, size := tinymem.StringToPtr(s)
 	if size == 0 { // invalid, but prevent crashing.
 		return
 	}
 
-	w.write(ptr, size)
+	b.write(ptr, size)
 }

@@ -3,8 +3,7 @@ package handler
 import (
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/imports"
-)
-
+) //nolint
 // Host is the current host that invokes the HandlerFn.
 var Host api.Host = wasmHost{}
 

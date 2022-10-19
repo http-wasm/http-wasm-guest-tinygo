@@ -35,10 +35,6 @@ func setURI(ptr uintptr, size uint32)
 func getProtocolVersion(ptr uintptr, limit uint32) (len uint32)
 
 //go:wasm-module http-handler
-//go:export set_protocol_version
-func setProtocolVersion(ptr uintptr, size uint32)
-
-//go:wasm-module http-handler
 //go:export get_request_header_names
 func getRequestHeaderNames(ptr uintptr, limit uint32) (len uint32)
 

@@ -34,10 +34,6 @@ func GetProtocolVersion(ptr uintptr, limit uint32) (len uint32) {
 	return getProtocolVersion(ptr, limit)
 }
 
-func SetProtocolVersion(ptr uintptr, size uint32) {
-	setProtocolVersion(ptr, size)
-}
-
 func GetRequestHeaderNames(ptr uintptr, limit uint32) (len uint32) {
 	return getRequestHeaderNames(ptr, limit)
 }

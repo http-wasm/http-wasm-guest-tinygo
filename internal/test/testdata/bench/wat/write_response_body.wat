@@ -3,7 +3,7 @@
   (import "http-handler" "write_response_body" (func $write_response_body
     (param $buf i32) (param $buf_len i32)))
 
-  (memory (export "memory") 1 (; 1 page==64KB ;))
+  (memory (export "memory") 1 1 (; 1 page==64KB ;))
 
   (global $body i32 (i32.const 0))
   (data (i32.const 16) "hello world")

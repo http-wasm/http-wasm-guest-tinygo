@@ -5,6 +5,7 @@ import (
 
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/imports"
+	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/mem"
 )
 
 // wasmHost implements api.Host with imported WebAssembly functions.
@@ -20,7 +21,7 @@ func (wasmHost) EnableFeatures(features api.Features) api.Features {
 
 // GetConfig implements the same method as documented on api.Host.
 func (wasmHost) GetConfig() []byte {
-	return getBytes(imports.GetConfig)
+	return mem.GetBytes(imports.GetConfig)
 }
 
 // Log implements the same method as documented on api.Host.

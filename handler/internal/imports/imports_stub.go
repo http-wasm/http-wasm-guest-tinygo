@@ -36,9 +36,6 @@ func getProtocolVersion(ptr uintptr, limit uint32) (len uint32) {
 	return 0
 }
 
-// setProtocolVersion is stubbed for compilation outside TinyGo.
-func setProtocolVersion(ptr uintptr, size uint32) {}
-
 // getRequestHeaderNames is stubbed for compilation outside TinyGo.
 func getRequestHeaderNames(ptr uintptr, limit uint32) (len uint32) {
 	return 0

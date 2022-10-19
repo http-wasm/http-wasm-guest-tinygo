@@ -1,5 +1,7 @@
 package api
 
+import "io"
+
 // Host is the WebAssembly host that accepts server requests. For example,
 // if written in Go, the host controls the http.Handler which dispatches to
 // the Handler here which would be compiled to wasm.
@@ -121,8 +123,9 @@ type Header interface {
 
 // Body is the HTTP message body.
 type Body interface {
-	// ReadAll reads all data in the body.
-	ReadAll() []byte
+	// WriteTo writes all data in the body to the writer and returns the length
+	// in bytes or an error if the writer raises one.
+	WriteTo(io.Writer) (size uint64, err error)
 
 	// Read reads the body into the buffer and returns the length in bytes read
 	// and true if the stream is empty as a result.
