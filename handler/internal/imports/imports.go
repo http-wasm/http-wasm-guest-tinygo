@@ -43,6 +43,10 @@ func getRequestHeaderNames(ptr uintptr, limit uint32) (len uint32)
 func getRequestHeader(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (okLen uint64)
 
 //go:wasm-module http-handler
+//go:export get_request_headers
+func getRequestHeaders(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (len uint32)
+
+//go:wasm-module http-handler
 //go:export set_request_header
 func setRequestHeader(namePtr uintptr, nameSize uint32, valuePtr uintptr, valueLen uint32)
 
@@ -61,6 +65,10 @@ func getRequestTrailerNames(ptr uintptr, limit uint32) (len uint32)
 //go:wasm-module http-handler
 //go:export get_request_trailer
 func getRequestTrailer(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (okLen uint64)
+
+//go:wasm-module http-handler
+//go:export get_request_trailers
+func getRequestTrailers(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (len uint32)
 
 //go:wasm-module http-handler
 //go:export set_request_trailer
@@ -87,6 +95,10 @@ func getResponseHeaderNames(ptr uintptr, limit uint32) (len uint32)
 func getResponseHeader(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (okLen uint64)
 
 //go:wasm-module http-handler
+//go:export get_response_headers
+func getResponseHeaders(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (len uint32)
+
+//go:wasm-module http-handler
 //go:export set_response_header
 func setResponseHeader(namePtr uintptr, nameSize uint32, valuePtr uintptr, valueLen uint32)
 
@@ -105,6 +117,10 @@ func getResponseTrailerNames(ptr uintptr, limit uint32) (len uint32)
 //go:wasm-module http-handler
 //go:export get_response_trailer
 func getResponseTrailer(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (okLen uint64)
+
+//go:wasm-module http-handler
+//go:export get_response_trailers
+func getResponseTrailers(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (len uint32)
 
 //go:wasm-module http-handler
 //go:export set_response_trailer

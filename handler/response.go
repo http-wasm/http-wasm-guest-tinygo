@@ -9,11 +9,13 @@ var (
 	wasmResponseHeaders = &wasmHeader{
 		getNames: imports.GetResponseHeaderNames,
 		get:      imports.GetResponseHeader,
+		getAll:   imports.GetResponseHeaders,
 		set:      imports.SetResponseHeader,
 	}
 	wasmResponseTrailers = &wasmHeader{
 		getNames: imports.GetResponseTrailerNames,
 		get:      imports.GetResponseTrailer,
+		getAll:   imports.GetResponseTrailers,
 		set:      imports.SetResponseTrailer,
 	}
 	wasmResponseBody = &wasmBody{

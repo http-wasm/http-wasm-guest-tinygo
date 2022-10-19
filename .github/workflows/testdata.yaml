@@ -1,8 +1,8 @@
 # `name` value will appear "as is" in the badge.
 # See https://docs.github.com/en/actions/configuring-and-managing-workflows/configuring-a-workflow#adding-a-workflow-status-badge-to-your-repository
-# yamllint --format github .github/workflows/commit.yaml
+# yamllint --format github .github/workflows/testdata.yaml
 ---
-name: "build"
+name: "testdata"
 
 on:
   push:  # We run tests on non-tagged pushes to main
@@ -20,32 +20,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  check:
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        go-version:  # Note: Go only supports 2 versions: https://go.dev/doc/devel/release#policy
-          - "1.18"
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-go@v3
-        with:  # Not cache: true because we also cache go-build and golangci-lint
-          go-version: ${{ matrix.go-version }}
-
-      - uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/.cache/golangci-lint
-            ~/go/pkg/mod
-            ~/go/bin
-          key: check-${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum', 'Makefile') }}
-
-      - run: make check
-
-  test:
+  # Note: TinyGo is not idempotent when generating wasm, so we neither check in
+  # %.wasm, nor do we verify it matches what's checked in.
+  testdata:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -58,7 +35,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - uses: actions/setup-go@v3
-        with:
+        with:  # Not cache: true because we also cache go-build and golangci-lint
           go-version: ${{ matrix.go-version }}
           cache: true
 
@@ -69,11 +46,10 @@ jobs:
           echo "TINYGOROOT=/usr/local/tinygo" >> $GITHUB_ENV
           echo "/usr/local/tinygo/bin" >> $GITHUB_PATH
 
-      - name: "Set up wasmtime"
-        run: |  # TinyGo currently requires wasmtime to execute `tinygo test -target=wasi ...`
-          curl https://wasmtime.dev/install.sh -sSf | bash
-          echo "$HOME/.wasmtime/bin" >> $GITHUB_PATH
+      - name: "Set up wat2wasm"
+        run: |  # Needed for testdata. wabt includes wat2wasm.
+          wabt_version=1.0.30
+          wabt_url=https://github.com/WebAssembly/wabt/releases/download/${wabt_version}/wabt-${wabt_version}-ubuntu.tar.gz
+          curl -sSL ${wabt_url} | tar --strip-components 2 -C /usr/local/bin -xzf - wabt-${wabt_version}/bin/wat2wasm
 
-      - run: make test
-
-      - run: make test.e2e
+      - run: make testdata

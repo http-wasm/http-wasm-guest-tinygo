@@ -12,11 +12,13 @@ var (
 	wasmRequestHeaders = &wasmHeader{
 		getNames: imports.GetRequestHeaderNames,
 		get:      imports.GetRequestHeader,
+		getAll:   imports.GetRequestHeaders,
 		set:      imports.SetRequestHeader,
 	}
 	wasmRequestTrailers = &wasmHeader{
 		getNames: imports.GetRequestTrailerNames,
 		get:      imports.GetRequestTrailer,
+		getAll:   imports.GetRequestTrailers,
 		set:      imports.SetRequestTrailer,
 	}
 	wasmRequestBody = &wasmBody{

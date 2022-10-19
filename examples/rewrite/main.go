@@ -6,10 +6,13 @@ import (
 )
 
 func main() {
-	handler.HandleFn = rewrite
+	handler.HandleFn = handle
 }
 
-func rewrite(req api.Request, _ api.Response, next api.Next) {
+// handle rewrites the request URI before dispatching to the next handler.
+//
+// Note: This is not a redirect, rather in-process routing.
+func handle(req api.Request, _ api.Response, next api.Next) {
 	if req.GetURI() == "/v1.0/hi?name=panda" {
 		req.SetURI("/v1.0/hello?name=teddy")
 	}
