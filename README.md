@@ -8,7 +8,7 @@
 This is a [TinyGo WASI][3] library that implements the [Guest ABI][4].
 
 ## Example
-The following is an [example](example) of rewriting the incoming request path.
+The following is an [example](examples/rewrite) of rewriting the request URI.
 
 ```go
 package main
@@ -19,25 +19,26 @@ import (
 )
 
 func main() {
-	handler.HandleFn = rewrite
+	handler.HandleFn = handle
 }
 
-func rewrite(req api.Request, _ api.Response, next api.Next) {
+// handle rewrites the request before dispatching to the next handler.
+//
+// Note: This is not a redirect, rather in-process routing.
+func handle(req api.Request, _ api.Response, next api.Next) {
 	if req.GetURI() == "/v1.0/hi?name=panda" {
 		req.SetURI("/v1.0/hello?name=teddy")
 	}
 	next()
 }
-
 ```
-
-Note: This is not a redirect as the rewrite happens in-memory before the real
-handler (`next()`) takes over.
 
 If you make changes, you can rebuild it like so:
 ```sh
-tinygo build -o example/main.wasm -scheduler=none --no-debug -target=wasi example/main.go
+tinygo build -o examples/rewrite/main.wasm -scheduler=none --no-debug -target=wasi examples/rewrite/main.go
 ```
+
+There are also more [examples](examples) you may wish to try out!
 
 # WARNING: This is a proof of concept!
 

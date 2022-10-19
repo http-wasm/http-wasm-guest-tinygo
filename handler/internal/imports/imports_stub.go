@@ -4,7 +4,7 @@ package imports
 
 // enableFeatures is stubbed for compilation outside TinyGo.
 func enableFeatures(features uint64) uint64 {
-	return 0
+	return features
 }
 
 // getConfig is stubbed for compilation outside TinyGo.
@@ -46,6 +46,11 @@ func getRequestHeader(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit
 	return 0
 }
 
+// getRequestHeaders is stubbed for compilation outside TinyGo.
+func getRequestHeaders(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (len uint32) {
+	return 0
+}
+
 // setRequestHeader is stubbed for compilation outside TinyGo.
 func setRequestHeader(namePtr uintptr, nameSize uint32, valuePtr uintptr, valueLen uint32) {}
 
@@ -64,6 +69,11 @@ func getRequestTrailerNames(ptr uintptr, limit uint32) (len uint32) {
 
 // getRequestTrailer is stubbed for compilation outside TinyGo.
 func getRequestTrailer(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (okLen uint64) {
+	return 0
+}
+
+// getRequestTrailers is stubbed for compilation outside TinyGo.
+func getRequestTrailers(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (len uint32) {
 	return 0
 }
 
@@ -91,6 +101,11 @@ func getResponseHeader(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimi
 	return 0
 }
 
+// getResponseHeaders is stubbed for compilation outside TinyGo.
+func getResponseHeaders(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (len uint32) {
+	return 0
+}
+
 // setResponseHeader is stubbed for compilation outside TinyGo.
 func setResponseHeader(namePtr uintptr, nameSize uint32, valuePtr uintptr, valueLen uint32) {}
 
@@ -109,6 +124,11 @@ func getResponseTrailerNames(ptr uintptr, limit uint32) (len uint32) {
 
 // getResponseTrailer is stubbed for compilation outside TinyGo.
 func getResponseTrailer(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (okLen uint64) {
+	return 0
+}
+
+// getResponseTrailers is stubbed for compilation outside TinyGo.
+func getResponseTrailers(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (len uint32) {
 	return 0
 }
 

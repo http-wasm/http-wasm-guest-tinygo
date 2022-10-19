@@ -13,6 +13,7 @@ import (
 type wasmHeader struct {
 	getNames func(ptr uintptr, limit uint32) (len uint32)
 	get      func(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (okLen uint64)
+	getAll   func(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (len uint32)
 	set      func(namePtr uintptr, nameSize uint32, valuePtr uintptr, valueLen uint32)
 }
 
@@ -47,6 +48,23 @@ func (w *wasmHeader) Get(name string) (value string, ok bool) {
 	ptr := uintptr(unsafe.Pointer(&buf[0]))
 	_ = w.get(namePtr, nameSize, ptr, size)
 	return string(buf), true
+}
+
+// GetAll implements the same method as documented on api.Request.
+func (w *wasmHeader) GetAll(name string) (names []string) {
+	namePtr, nameSize := tinymem.StringToPtr(name)
+	size := w.getAll(namePtr, nameSize, mem.ReadBufPtr, mem.ReadBufLimit)
+	if size == 0 {
+		return
+	}
+	if size <= mem.ReadBufLimit { // then re-use the mutable buffer.
+		return mem.GetNULTerminated(mem.ReadBuf[:size])
+	}
+	// Otherwise, we have to allocate a new buffer for the large entry.
+	buf := make([]byte, size)
+	ptr := uintptr(unsafe.Pointer(&buf[0]))
+	_ = w.getAll(namePtr, nameSize, ptr, size)
+	return mem.GetNULTerminated(buf)
 }
 
 // Set implements the same method as documented on api.Request.

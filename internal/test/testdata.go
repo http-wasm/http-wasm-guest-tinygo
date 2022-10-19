@@ -3,22 +3,60 @@ package test
 import (
 	_ "embed"
 	"log"
+	"net/http"
 	"os"
 	"path"
+	"strings"
 )
 
-var BinExample = func() []byte {
-	p := path.Join("..", "..", "example", "main.wasm")
+var BinExampleWASI = func() []byte {
+	return binExample("wasi")
+}()
+
+var BinExampleRewrite = func() []byte {
+	return binExample("rewrite")
+}()
+
+func binExample(name string) []byte {
+	p := path.Join("..", "..", "examples", name, "main.wasm")
 	if wasm, err := os.ReadFile(p); err != nil {
 		log.Panicln(err)
 		return nil
 	} else {
 		return wasm
 	}
-}()
+}
 
-//go:embed testdata/log/main.wasm
-var BinLog []byte
+var requestExampleConsoleBody = `{"hello": "panda"}`
+
+func RequestExampleWASI(url string) (req *http.Request) {
+	body := strings.NewReader(requestExampleConsoleBody)
+	req, _ = http.NewRequest(http.MethodPost, url+"/v1.0/hi?name=panda", body)
+	req.Header.Set("Content-Type", "application/json")
+	req.Host = "localhost"
+	return
+}
+
+var HandlerExampleWASI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Add("Set-Cookie", "a=b") // rewrite of multiple headers
+	w.Header().Add("Set-Cookie", "c=d")
+
+	// Use chunked encoding so we can set a test trailer
+	w.Header().Set("Transfer-Encoding", "chunked")
+	w.Header().Set("Trailer", "grpc-status")
+	w.Header().Set(http.TrailerPrefix+"grpc-status", "1")
+	w.Write([]byte(`{"hello": "world"}`)) // nolint
+})
+
+//go:embed testdata/e2e/wat/wasi.wasm
+var BinE2EWASIWat []byte
+
+//go:embed testdata/e2e/tinygo/features/main.wasm
+var BinE2EFeaturesTinyGo []byte
+
+//go:embed testdata/e2e/tinygo/log/main.wasm
+var BinE2ELog []byte
 
 //go:embed testdata/bench/tinygo/log/main.wasm
 var BinBenchLogTinyGo []byte

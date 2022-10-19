@@ -4,9 +4,7 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
-	"io"
 	"net/http"
-	"net/url"
 	"testing"
 
 	nethttp "github.com/http-wasm/http-wasm-host-go/handler/nethttp"
@@ -15,15 +13,14 @@ import (
 )
 
 var (
-	readOnlyRequest                *http.Request
-	readOnlyRequestWithHeader      *http.Request
-	readOnlyRequestWithLargeHeader *http.Request
-	smallBody                      []byte
-	largeSize                      int
-	largeBody                      []byte
+	noopHandler http.Handler
+	smallBody   []byte
+	largeSize   int
+	largeBody   []byte
 )
 
 func init() {
+	noopHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 	smallBody = []byte("hello world")
 	largeSize = 4096 // 2x the read buffer size
 	largeBody = make([]byte, largeSize)
@@ -33,177 +30,180 @@ func init() {
 	for i := largeSize / 2; i < largeSize; i++ {
 		largeBody[i] = 'b'
 	}
-	readOnlyRequest = &http.Request{
-		Method: "GET",
-		URL:    &url.URL{Path: "/v1.0/hi"},
-		Header: http.Header{},
-	}
-	readOnlyRequestWithHeader = &http.Request{
-		Method: "GET",
-		URL:    &url.URL{Path: "/v1.0/hi"},
-		Header: http.Header{
-			"Host":   {"localhost"},
-			"Accept": {"text/plain"},
-		},
-	}
-	readOnlyRequestWithLargeHeader = &http.Request{
-		Method: "GET",
-		URL:    &url.URL{Path: "/v1.0/hi"},
-		Header: http.Header{
-			"Host":   {"localhost"},
-			"Accept": {"text/plain"},
-			"data":   {string(largeBody)},
-		},
-	}
 }
 
-func postSmall() *http.Request {
-	return &http.Request{
-		Method:        http.MethodPost,
-		ContentLength: int64(len(smallBody)),
-		Body:          io.NopCloser(bytes.NewReader(smallBody)),
-	}
+func get(url string) (req *http.Request) {
+	req, _ = http.NewRequest(http.MethodGet, url+"/v1.0/hi", nil)
+	return
 }
 
-func postLarge() *http.Request {
-	return &http.Request{
-		Method:        http.MethodPost,
-		ContentLength: int64(len(largeBody)),
-		Body:          io.NopCloser(bytes.NewReader(largeBody)),
-	}
+func getWithLargeHeader(url string) (req *http.Request) {
+	req, _ = http.NewRequest(http.MethodGet, url+"/v1.0/hi", nil)
+	req.Header.Add("data", string(largeBody))
+	return
+}
+
+func getWithQuery(url string) (req *http.Request) {
+	req, _ = http.NewRequest(http.MethodGet, url+"/v1.0/hi?name=panda", nil)
+	return
+}
+
+func getWithoutHeaders(url string) (req *http.Request) {
+	req, _ = http.NewRequest(http.MethodGet, url+"/v1.0/hi", nil)
+	req.Header = http.Header{}
+	return
+}
+
+func post(url string) (req *http.Request) {
+	body := bytes.NewReader(smallBody)
+	req, _ = http.NewRequest(http.MethodPost, url, body)
+	return
+}
+
+func postLarge(url string) (req *http.Request) {
+	body := bytes.NewReader(largeBody)
+	req, _ = http.NewRequest(http.MethodPost, url, body)
+	return
 }
 
 var benches = map[string]struct {
-	bins       map[string][]byte
-	newRequest func() *http.Request
+	bins    map[string][]byte
+	next    http.Handler
+	request func(url string) *http.Request
 }{
+	"example wasi": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinExampleWASI,
+			"wat":    test.BinE2EWASIWat,
+		},
+		next:    test.HandlerExampleWASI,
+		request: test.RequestExampleWASI,
+	},
+	"example rewrite": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinExampleRewrite,
+		},
+		request: getWithQuery,
+	},
 	"log": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchLogTinyGo,
 			"wat":    test.BinBenchLogWat,
 		},
-		newRequest: func() *http.Request {
-			return readOnlyRequest
-		}},
+		request: get,
+	},
 	"get_uri": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchGetURITinyGo,
 			"wat":    test.BinBenchGetURIWat,
 		},
-		newRequest: func() *http.Request {
-			return readOnlyRequest
-		}},
+		request: get,
+	},
 	"set_uri": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchSetURITinyGo,
 			"wat":    test.BinBenchSetURIWat,
 		},
-		newRequest: func() *http.Request {
-			return &http.Request{URL: &url.URL{}}
-		}},
+		request: get,
+	},
 	"get_request_header_names none": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchGetRequestHeaderNamesTinyGo,
 			"wat":    test.BinBenchGetRequestHeaderNamesWat,
 		},
-		newRequest: func() *http.Request {
-			return readOnlyRequest
-		}},
-	"get_request_header_names small": {
+		request: getWithoutHeaders,
+	},
+	"get_request_header_names": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchGetRequestHeaderNamesTinyGo,
 			"wat":    test.BinBenchGetRequestHeaderNamesWat,
 		},
-		newRequest: func() *http.Request {
-			return readOnlyRequestWithHeader
-		}},
+		request: get,
+	},
 	"get_request_header_names large": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchGetRequestHeaderNamesTinyGo,
 			"wat":    test.BinBenchGetRequestHeaderNamesWat,
 		},
-		newRequest: func() *http.Request {
-			return readOnlyRequestWithLargeHeader
-		}},
+		request: getWithLargeHeader,
+	},
 	"get_request_header exists": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchGetRequestHeaderTinyGo,
 			"wat":    test.BinBenchGetRequestHeaderWat,
 		},
-		newRequest: func() *http.Request {
-			return readOnlyRequestWithHeader
-		}},
+		request: get,
+	},
 	"get_request_header not exists": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchGetRequestHeaderTinyGo,
 			"wat":    test.BinBenchGetRequestHeaderWat,
 		},
-		newRequest: func() *http.Request {
-			return readOnlyRequest
-		}},
+		request: getWithoutHeaders,
+	},
 	"read_request_body": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchReadRequestBodyTinyGo,
 			"wat":    test.BinBenchReadRequestBodyWat,
 		},
-		newRequest: postSmall},
-	"read_request_body_stream small": {
+		request: post,
+	},
+	"read_request_body_stream": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchReadRequestBodyStreamTinyGo,
 			"wat":    test.BinBenchReadRequestBodyStreamWat,
 		},
-		newRequest: postSmall},
+		request: post,
+	},
 	"read_request_body_stream large": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchReadRequestBodyStreamTinyGo,
 			"wat":    test.BinBenchReadRequestBodyStreamWat,
 		},
-		newRequest: postLarge},
+		request: postLarge,
+	},
 	"next": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchNextTinyGo,
 			"wat":    test.BinBenchNextWat,
 		},
-		newRequest: func() *http.Request {
-			return readOnlyRequest
-		}},
+		request: get,
+	},
 	"set_status_code": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchSetStatusCodeTinyGo,
 			"wat":    test.BinBenchSetStatusCodeWat,
 		},
-		newRequest: func() *http.Request {
-			return readOnlyRequest
-		}},
+		request: get,
+	},
 	"set_response_header": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchSetResponseHeaderTinyGo,
 			"wat":    test.BinBenchSetResponseHeaderWat,
 		},
-		newRequest: func() *http.Request {
-			return readOnlyRequest
-		}},
+		request: get,
+	},
 	"write_response_body": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchWriteResponseBodyTinyGo,
 			"wat":    test.BinBenchWriteResponseBodyWat,
 		},
-		newRequest: func() *http.Request {
-			return readOnlyRequest
-		}},
+		request: get,
+	},
 }
 
 func Benchmark(b *testing.B) {
 	for n, s := range benches {
+		s := s
 		b.Run(n, func(b *testing.B) {
 			for n, bin := range s.bins {
-				benchmark(b, n, bin, s.newRequest)
+				benchmark(b, n, bin, s.next, s.request)
 			}
 		})
 	}
 }
 
-func benchmark(b *testing.B, name string, bin []byte, newRequest func() *http.Request) {
+func benchmark(b *testing.B, name string, bin []byte, handler http.Handler, newRequest func(string) *http.Request) {
 	ctx := context.Background()
 
 	mw, err := nethttp.NewMiddleware(ctx, bin)
@@ -212,15 +212,16 @@ func benchmark(b *testing.B, name string, bin []byte, newRequest func() *http.Re
 	}
 	defer mw.Close(ctx)
 
-	h := mw.NewHandler(ctx, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(200)
-	}))
+	if handler == nil {
+		handler = noopHandler
+	}
+	h := mw.NewHandler(ctx, handler)
 
 	b.Run(name, func(b *testing.B) {
 		// We don't report allocations because memory allocations for TinyGo are
 		// in wasm which isn't visible to the Go benchmark.
 		for i := 0; i < b.N; i++ {
-			h.ServeHTTP(fakeResponseWriter{}, newRequest())
+			h.ServeHTTP(fakeResponseWriter{}, newRequest("http://localhost"))
 		}
 	})
 }

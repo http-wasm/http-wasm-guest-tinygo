@@ -117,6 +117,9 @@ type Header interface {
 	// Get returns one value for the given name, or false if there are none.
 	Get(name string) (value string, ok bool)
 
+	// GetAll returns all values for the given name, or nil if there are none.
+	GetAll(name string) []string
+
 	// Set adds or overwrites the header with the given value.
 	Set(name, value string)
 }

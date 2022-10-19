@@ -42,6 +42,10 @@ func GetRequestHeader(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit
 	return getRequestHeader(namePtr, nameSize, bufPtr, bufLimit)
 }
 
+func GetRequestHeaders(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (len uint32) {
+	return getRequestHeaders(namePtr, nameSize, bufPtr, bufLimit)
+}
+
 func SetRequestHeader(namePtr uintptr, nameSize uint32, valuePtr uintptr, valueSize uint32) {
 	setRequestHeader(namePtr, nameSize, valuePtr, valueSize)
 }
@@ -60,6 +64,10 @@ func GetRequestTrailerNames(ptr uintptr, limit uint32) (len uint32) {
 
 func GetRequestTrailer(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (okLen uint64) {
 	return getRequestTrailer(namePtr, nameSize, bufPtr, bufLimit)
+}
+
+func GetRequestTrailers(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (len uint32) {
+	return getRequestTrailers(namePtr, nameSize, bufPtr, bufLimit)
 }
 
 func SetRequestTrailer(namePtr uintptr, nameSize uint32, valuePtr uintptr, valueSize uint32) {
@@ -86,6 +94,10 @@ func GetResponseHeader(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimi
 	return getResponseHeader(namePtr, nameSize, bufPtr, bufLimit)
 }
 
+func GetResponseHeaders(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (len uint32) {
+	return getResponseHeaders(namePtr, nameSize, bufPtr, bufLimit)
+}
+
 func SetResponseHeader(namePtr uintptr, nameSize uint32, valuePtr uintptr, valueSize uint32) {
 	setResponseHeader(namePtr, nameSize, valuePtr, valueSize)
 }
@@ -104,6 +116,10 @@ func GetResponseTrailerNames(ptr uintptr, limit uint32) (len uint32) {
 
 func GetResponseTrailer(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (okLen uint64) {
 	return getResponseTrailer(namePtr, nameSize, bufPtr, bufLimit)
+}
+
+func GetResponseTrailers(namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (len uint32) {
+	return getResponseTrailers(namePtr, nameSize, bufPtr, bufLimit)
 }
 
 func SetResponseTrailer(namePtr uintptr, nameSize uint32, valuePtr uintptr, valueSize uint32) {

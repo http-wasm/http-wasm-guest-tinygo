@@ -6,7 +6,7 @@ testdata:
 	@$(MAKE) build.wat
 	@$(MAKE) build.tinygo
 
-tinygo_sources := example/main.go $(wildcard internal/test/testdata/*/*.go) $(wildcard internal/test/testdata/*/*/*.go) $(wildcard internal/test/testdata/*/*/*/*.go)
+tinygo_sources := $(wildcard examples/*/*.go) $(wildcard internal/test/testdata/*/*.go) $(wildcard internal/test/testdata/*/*/*.go) $(wildcard internal/test/testdata/*/*/*/*.go)
 build.tinygo: $(tinygo_sources)
 	@for f in $^; do \
 	    tinygo build -o $$(echo $$f | sed -e 's/\.go/\.wasm/') -scheduler=none --no-debug -target=wasi $$f; \
