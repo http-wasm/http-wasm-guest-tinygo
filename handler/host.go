@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"github.com/tetratelabs/tinymem"
-
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/imports"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/mem"
@@ -29,6 +27,6 @@ func (wasmHost) Log(message string) {
 	if len(message) == 0 {
 		return // don't incur host call overhead
 	}
-	ptr, size := tinymem.StringToPtr(message)
+	ptr, size := mem.StringToPtr(message)
 	imports.Log(ptr, size)
 }

@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"github.com/tetratelabs/tinymem"
-
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/imports"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/mem"
@@ -40,7 +38,7 @@ func (wasmRequest) GetMethod() string {
 
 // SetMethod implements the same method as documented on api.Request.
 func (wasmRequest) SetMethod(method string) {
-	ptr, size := tinymem.StringToPtr(method)
+	ptr, size := mem.StringToPtr(method)
 	imports.SetMethod(ptr, size)
 }
 
@@ -51,7 +49,7 @@ func (wasmRequest) GetURI() string {
 
 // SetURI implements the same method as documented on api.Request.
 func (wasmRequest) SetURI(uri string) {
-	ptr, size := tinymem.StringToPtr(uri)
+	ptr, size := mem.StringToPtr(uri)
 	imports.SetURI(ptr, size)
 }
 

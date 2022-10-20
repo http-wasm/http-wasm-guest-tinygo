@@ -11,6 +11,18 @@ var (
 	ReadBufLimit = uint32(2048)
 )
 
+// StringToPtr returns a pointer and size pair for the given string in a way
+// compatible with WebAssembly numeric types.
+func StringToPtr(s string) (uintptr, uint32) {
+	if s == "" {
+		return ReadBufPtr, 0
+	}
+	buf := []byte(s)
+	ptr := &buf[0]
+	unsafePtr := uintptr(unsafe.Pointer(ptr))
+	return unsafePtr, uint32(len(buf))
+}
+
 func GetString(fn func(ptr uintptr, limit uint32) (len uint32)) (result string) {
 	size := fn(ReadBufPtr, ReadBufLimit)
 	if size == 0 {

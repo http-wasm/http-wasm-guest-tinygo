@@ -74,16 +74,30 @@ var benches = map[string]struct {
 	"example wasi": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinExampleWASI,
-			"wat":    test.BinE2EWASIWat,
+			"wat":    test.BinExampleWASIWat,
 		},
 		next:    test.HandlerExampleWASI,
 		request: test.RequestExampleWASI,
 	},
-	"example rewrite": {
+	"example router host response": {
 		bins: map[string][]byte{
-			"TinyGo": test.BinExampleRewrite,
+			"TinyGo": test.BinExampleRouter,
+			"wat":    test.BinExampleRouterWat,
 		},
-		request: getWithQuery,
+		request: func(url string) (req *http.Request) {
+			req, _ = http.NewRequest(http.MethodGet, url+"/host", nil)
+			return
+		},
+	},
+	"example router wasm response": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinExampleRouter,
+			"wat":    test.BinExampleRouterWat,
+		},
+		request: func(url string) (req *http.Request) {
+			req, _ = http.NewRequest(http.MethodGet, url, nil)
+			return
+		},
 	},
 	"log": {
 		bins: map[string][]byte{
