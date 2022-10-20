@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"strconv"
+	"strings"
 
 	httpwasm "github.com/http-wasm/http-wasm-guest-tinygo/handler"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
@@ -17,7 +17,7 @@ import (
 func main() {
 	requiredFeatures := api.FeatureBufferRequest | api.FeatureBufferResponse
 	if want, have := requiredFeatures, httpwasm.Host.EnableFeatures(requiredFeatures); !have.IsEnabled(want) {
-		panic(fmt.Sprint("unexpected features, want: ", want.String(), ", have: ", have.String()))
+		panic("unexpected features, want: " + want.String() + ", have: " + have.String())
 	}
 	httpwasm.HandleFn = handle
 }
@@ -36,7 +36,7 @@ func handle(req api.Request, resp api.Response, next api.Next) {
 	// Handle the request, in whichever way defined by the host.
 	next()
 
-	fmt.Println()
+	println()
 
 	// Because we enabled buffering, we can read the response.
 	// Print it to the console.
@@ -49,14 +49,14 @@ func handle(req api.Request, resp api.Response, next api.Next) {
 // printRequestLine prints the request line to the wasi.
 // Ex "GET /a HTTP/1.1"
 func printRequestLine(req api.Request) {
-	fmt.Println(req.GetMethod(), req.GetURI(), req.GetProtocolVersion())
+	println(req.GetMethod(), req.GetURI(), req.GetProtocolVersion())
 }
 
 // printHeaders prints each header field to the wasi. Ex "a: b"
 func printHeaders(h api.Header) {
 	for _, n := range h.Names() {
 		for _, v := range h.GetAll(n) {
-			fmt.Println(n + ": " + v)
+			println(n + ": " + v)
 		}
 	}
 }
@@ -69,7 +69,7 @@ type bodyWriter bool
 // Write adds an extra newline prior to printing it to the wasi.
 func (b *bodyWriter) Write(p []byte) (n int, err error) {
 	if !*b {
-		fmt.Println()
+		println()
 		*b = true
 	}
 	return os.Stdout.Write(p)
@@ -81,12 +81,28 @@ func printBody(b api.Body) {
 	if size, err := b.WriteTo(&w); err != nil {
 		panic(err)
 	} else if size > 0 {
-		fmt.Println() // add another newline for visibility
+		println() // add another newline for visibility
 	}
 }
 
 // printResponseLine prints the response line to the wasi, without the
 // status reason. Ex "HTTP/1.1 200"
 func printResponseLine(req api.Request, resp api.Response) {
-	fmt.Println(req.GetProtocolVersion(), strconv.Itoa(int(resp.GetStatusCode())))
+	println(req.GetProtocolVersion(), strconv.Itoa(int(resp.GetStatusCode())))
+}
+
+// println is like fmt.Println, but faster and smaller with TinyGo.
+func println(s ...string) {
+	if len(s) == 0 {
+		os.Stdout.WriteString("\n") // nolint
+		return
+	}
+	var b strings.Builder
+	b.WriteString(s[0])
+	for _, s := range s[1:] {
+		b.WriteByte(' ')
+		b.WriteString(s)
+	}
+	b.WriteByte('\n')
+	os.Stdout.WriteString(b.String()) // nolint
 }
