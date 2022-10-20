@@ -38,7 +38,7 @@ type Next func()
 //
 // Ex. To modify the incoming request:
 //
-//	func rewrite(req Request, _ Response, next Next) {
+//	func router(req Request, _ Response, next Next) {
 //		if req.GetURI() == "/v1.0/hi?name=panda" {
 //			req.SetURI("/v1.0/hello?name=teddy")
 //		}

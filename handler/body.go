@@ -4,8 +4,6 @@ import (
 	"io"
 	"unsafe"
 
-	"github.com/tetratelabs/tinymem"
-
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/mem"
 )
@@ -47,7 +45,7 @@ func (b *wasmBody) Read(bytes []byte) (size uint32, eof bool) {
 		return 0, false
 	}
 
-	ptr := uintptr(unsafe.Pointer(&bytes[0])) // TODO: tinymem.SliceToPtr
+	ptr := uintptr(unsafe.Pointer(&bytes[0])) // TODO: mem.SliceToPtr
 	return read(b, ptr, limit)
 }
 
@@ -65,13 +63,13 @@ func (b *wasmBody) Write(bytes []byte) {
 		return
 	}
 
-	ptr := uintptr(unsafe.Pointer(&bytes[0])) // TODO: tinymem.SliceToPtr
+	ptr := uintptr(unsafe.Pointer(&bytes[0])) // TODO: mem.SliceToPtr
 	b.write(ptr, size)
 }
 
 // WriteString implements the same method as documented on api.Body.
 func (b *wasmBody) WriteString(s string) {
-	ptr, size := tinymem.StringToPtr(s)
+	ptr, size := mem.StringToPtr(s)
 	if size == 0 { // invalid, but prevent crashing.
 		return
 	}

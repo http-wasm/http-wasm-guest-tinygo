@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -34,23 +33,36 @@ func Test_EndToEnd(t *testing.T) {
 
 	tests := []testCase{
 		{
-			name: "example rewrite",
-			bin:  test.BinExampleRewrite,
+			name:    "example router guest response",
+			bin:     test.BinExampleRouter,
+			request: get,
+			next: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				t.Fatal("host should not see this request")
+			}),
+			test: func(t *testing.T, content []byte, logMessages []string, stdout, stderr string) {
+				// should see the response written by the guest.
+				require.Equal(t, "hello", string(content))
+				require.Empty(t, stderr)
+				require.Empty(t, stdout)
+				require.Empty(t, logMessages)
+			},
+		},
+		{
+			name: "example router host response",
+			bin:  test.BinExampleRouter,
 			request: func(url string) (req *http.Request) {
-				url = fmt.Sprintf("%s/v1.0/hi?name=panda", url)
-				req, _ = http.NewRequest(http.MethodGet, url, nil)
+				req, _ = http.NewRequest(http.MethodGet, url+"/host", nil)
 				return
 			},
 			next: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				r.Header.Set("Content-Type", "text/plain")
-				w.Write([]byte(r.URL.String())) // nolint
+				// Ensure the handler saw the re-written path.
+				require.Equal(t, "/", r.URL.Path)
 			}),
 			test: func(t *testing.T, content []byte, logMessages []string, stdout, stderr string) {
-				// Ensure the handler saw the re-written path.
-				require.Equal(t, "/v1.0/hello?name=teddy", string(content))
-				require.Equal(t, "", stderr)
-				require.Equal(t, "", stdout)
-				require.Nil(t, logMessages)
+				require.Empty(t, content)
+				require.Empty(t, stderr)
+				require.Empty(t, stdout)
+				require.Empty(t, logMessages)
 			},
 		},
 		{
@@ -62,7 +74,7 @@ func Test_EndToEnd(t *testing.T) {
 		},
 		{
 			name:    "wasi - wat", // makes sure the implementations match!
-			bin:     test.BinE2EWASIWat,
+			bin:     test.BinExampleWASIWat,
 			request: test.RequestExampleWASI,
 			next:    test.HandlerExampleWASI,
 			test:    testConsole,
@@ -78,9 +90,9 @@ func Test_EndToEnd(t *testing.T) {
 			}),
 			test: func(t *testing.T, content []byte, logMessages []string, stdout, stderr string) {
 				require.Equal(t, "buffer-request|buffer-response", string(content))
-				require.Equal(t, "", stderr)
-				require.Equal(t, "", stdout)
-				require.Nil(t, logMessages)
+				require.Empty(t, stderr)
+				require.Empty(t, stdout)
+				require.Empty(t, logMessages)
 			},
 		},
 		{
@@ -94,9 +106,9 @@ func Test_EndToEnd(t *testing.T) {
 				w.WriteHeader(200)
 			}),
 			test: func(t *testing.T, content []byte, logMessages []string, stdout, stderr string) {
-				require.Equal(t, "", string(content))
-				require.Equal(t, "", stderr)
-				require.Equal(t, "", stdout)
+				require.Empty(t, content)
+				require.Empty(t, stderr)
+				require.Empty(t, stdout)
 				require.Equal(t, []string{"before", "after"}, logMessages)
 			},
 		},
@@ -141,7 +153,7 @@ func Test_EndToEnd(t *testing.T) {
 func testConsole(t *testing.T, content []byte, logMessages []string, stdout, stderr string) {
 	// First, verify the content, so we know there are no errors.
 	require.Equal(t, `{"hello": "world"}`, string(content))
-	require.Equal(t, "", stderr)
+	require.Empty(t, stderr)
 	require.Equal(t, `POST /v1.0/hi?name=panda HTTP/1.1
 Accept-Encoding: gzip
 Content-Length: 18
@@ -161,5 +173,5 @@ Transfer-Encoding: chunked
 {"hello": "world"}
 grpc-status: 1
 `, stdout)
-	require.Nil(t, logMessages)
+	require.Empty(t, logMessages)
 }

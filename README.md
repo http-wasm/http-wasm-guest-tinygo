@@ -8,12 +8,14 @@
 This is a [TinyGo WASI][3] library that implements the [Guest ABI][4].
 
 ## Example
-The following is an [example](examples/rewrite) of rewriting the request URI.
+The following is an [example](examples/router) of routing middleware:
 
 ```go
 package main
 
 import (
+	"strings"
+
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 )
@@ -22,20 +24,22 @@ func main() {
 	handler.HandleFn = handle
 }
 
-// handle rewrites the request before dispatching to the next handler.
-//
-// Note: This is not a redirect, rather in-process routing.
-func handle(req api.Request, _ api.Response, next api.Next) {
-	if req.GetURI() == "/v1.0/hi?name=panda" {
-		req.SetURI("/v1.0/hello?name=teddy")
+// handle implements a simple HTTP router.
+func handle(req api.Request, resp api.Response, next api.Next) {
+	// If the URI starts with /host, trim it and dispatch to the next handler.
+	if uri := req.GetURI(); strings.HasPrefix(uri, "/host") {
+		req.SetURI(uri[5:])
+		next()
+	} else { // Serve a static response
+		resp.Headers().Set("Content-Type", "text/plain")
+		resp.Body().WriteString("hello")
 	}
-	next()
 }
 ```
 
 If you make changes, you can rebuild it like so:
 ```sh
-tinygo build -o examples/rewrite/main.wasm -scheduler=none --no-debug -target=wasi examples/rewrite/main.go
+tinygo build -o examples/router/main.wasm -scheduler=none --no-debug -target=wasi examples/router/main.go
 ```
 
 There are also more [examples](examples) you may wish to try out!

@@ -3,8 +3,6 @@ package handler
 import (
 	"unsafe"
 
-	"github.com/tetratelabs/tinymem"
-
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/mem"
 )
@@ -38,7 +36,7 @@ func (w *wasmHeader) Names() (names []string) {
 
 // Get implements the same method as documented on api.Request.
 func (w *wasmHeader) Get(name string) (value string, ok bool) {
-	namePtr, nameSize := tinymem.StringToPtr(name)
+	namePtr, nameSize := mem.StringToPtr(name)
 	okLen := w.get(namePtr, nameSize, 0, 0)
 	if okLen == 0 {
 		return "", false
@@ -52,7 +50,7 @@ func (w *wasmHeader) Get(name string) (value string, ok bool) {
 
 // GetAll implements the same method as documented on api.Request.
 func (w *wasmHeader) GetAll(name string) (names []string) {
-	namePtr, nameSize := tinymem.StringToPtr(name)
+	namePtr, nameSize := mem.StringToPtr(name)
 	size := w.getAll(namePtr, nameSize, mem.ReadBufPtr, mem.ReadBufLimit)
 	if size == 0 {
 		return
@@ -69,7 +67,7 @@ func (w *wasmHeader) GetAll(name string) (names []string) {
 
 // Set implements the same method as documented on api.Request.
 func (w *wasmHeader) Set(name, value string) {
-	namePtr, nameSize := tinymem.StringToPtr(name)
-	valuePtr, valueSize := tinymem.StringToPtr(value)
+	namePtr, nameSize := mem.StringToPtr(name)
+	valuePtr, valueSize := mem.StringToPtr(value)
 	w.set(namePtr, nameSize, valuePtr, valueSize)
 }
