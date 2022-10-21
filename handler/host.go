@@ -23,10 +23,10 @@ func (wasmHost) GetConfig() []byte {
 }
 
 // Log implements the same method as documented on api.Host.
-func (wasmHost) Log(message string) {
+func (wasmHost) Log(level api.LogLevel, message string) {
 	if len(message) == 0 {
 		return // don't incur host call overhead
 	}
 	ptr, size := mem.StringToPtr(message)
-	imports.Log(ptr, size)
+	imports.Log(level, ptr, size)
 }

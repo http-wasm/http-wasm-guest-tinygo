@@ -27,29 +27,41 @@ var BinBenchSetURITinyGo []byte
 //go:embed testdata/bench/wat/set_uri.wasm
 var BinBenchSetURIWat []byte
 
-//go:embed testdata/bench/tinygo/get_request_header_names/main.wasm
-var BinBenchGetRequestHeaderNamesTinyGo []byte
+//go:embed testdata/bench/tinygo/get_header_names/main.wasm
+var BinBenchGetHeaderValuesNamesTinyGo []byte
 
-//go:embed testdata/bench/wat/get_request_header_names.wasm
-var BinBenchGetRequestHeaderNamesWat []byte
+//go:embed testdata/bench/wat/get_header_names.wasm
+var BinBenchGetHeaderValuesNamesWat []byte
 
-//go:embed testdata/bench/tinygo/get_request_header/main.wasm
-var BinBenchGetRequestHeaderTinyGo []byte
+//go:embed testdata/bench/tinygo/get_header_values/main.wasm
+var BinBenchGetHeaderValuesTinyGo []byte
 
-//go:embed testdata/bench/wat/get_request_header.wasm
-var BinBenchGetRequestHeaderWat []byte
+//go:embed testdata/bench/wat/get_header_values.wasm
+var BinBenchGetHeaderValuesWat []byte
 
-//go:embed testdata/bench/tinygo/read_request_body/main.wasm
-var BinBenchReadRequestBodyTinyGo []byte
+//go:embed testdata/bench/tinygo/set_header_value/main.wasm
+var BinBenchSetHeaderValueTinyGo []byte
 
-//go:embed testdata/bench/wat/read_request_body.wasm
-var BinBenchReadRequestBodyWat []byte
+//go:embed testdata/bench/wat/set_header_value.wasm
+var BinBenchSetHeaderValueWat []byte
 
-//go:embed testdata/bench/tinygo/read_request_body_stream/main.wasm
-var BinBenchReadRequestBodyStreamTinyGo []byte
+//go:embed testdata/bench/tinygo/read_body/main.wasm
+var BinBenchReadBodyTinyGo []byte
 
-//go:embed testdata/bench/wat/read_request_body_stream.wasm
-var BinBenchReadRequestBodyStreamWat []byte
+//go:embed testdata/bench/tinygo/write_body/main.wasm
+var BinBenchWriteBodyTinyGo []byte
+
+//go:embed testdata/bench/wat/write_body.wasm
+var BinBenchWriteBodyWat []byte
+
+//go:embed testdata/bench/wat/read_body.wasm
+var BinBenchReadBodyWat []byte
+
+//go:embed testdata/bench/tinygo/read_body_stream/main.wasm
+var BinBenchReadBodyStreamTinyGo []byte
+
+//go:embed testdata/bench/wat/read_body_stream.wasm
+var BinBenchReadBodyStreamWat []byte
 
 //go:embed testdata/bench/tinygo/next/main.wasm
 var BinBenchNextTinyGo []byte
@@ -62,18 +74,6 @@ var BinBenchSetStatusCodeTinyGo []byte
 
 //go:embed testdata/bench/wat/set_status_code.wasm
 var BinBenchSetStatusCodeWat []byte
-
-//go:embed testdata/bench/tinygo/set_response_header/main.wasm
-var BinBenchSetResponseHeaderTinyGo []byte
-
-//go:embed testdata/bench/wat/set_response_header.wasm
-var BinBenchSetResponseHeaderWat []byte
-
-//go:embed testdata/bench/tinygo/write_response_body/main.wasm
-var BinBenchWriteResponseBodyTinyGo []byte
-
-//go:embed testdata/bench/wat/write_response_body.wasm
-var BinBenchWriteResponseBodyWat []byte
 
 var BinExampleRouter = func() []byte {
 	return binExample("router")

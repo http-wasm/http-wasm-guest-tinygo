@@ -6,9 +6,9 @@ import (
 )
 
 func main() {
-	handler.HandleFn = log
+	handler.HandleFn = getHeaderValues
 }
 
-func log(req api.Request, resp api.Response, next api.Next) {
-	handler.Host.Log(api.LogLevelInfo, "hello world")
+func getHeaderValues(req api.Request, resp api.Response, next api.Next) {
+	_ = req.Headers().GetAll("Accept")
 }

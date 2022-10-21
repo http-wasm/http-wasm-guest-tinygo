@@ -5,25 +5,6 @@ import (
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/imports"
 )
 
-var (
-	wasmResponseHeaders = &wasmHeader{
-		getNames: imports.GetResponseHeaderNames,
-		get:      imports.GetResponseHeader,
-		getAll:   imports.GetResponseHeaders,
-		set:      imports.SetResponseHeader,
-	}
-	wasmResponseTrailers = &wasmHeader{
-		getNames: imports.GetResponseTrailerNames,
-		get:      imports.GetResponseTrailer,
-		getAll:   imports.GetResponseTrailers,
-		set:      imports.SetResponseTrailer,
-	}
-	wasmResponseBody = &wasmBody{
-		read:  imports.ReadResponseBody,
-		write: imports.WriteResponseBody,
-	}
-)
-
 // wasmResponse implements api.Response with imported WebAssembly functions.
 type wasmResponse struct{}
 
@@ -42,7 +23,7 @@ func (r wasmResponse) SetStatusCode(statusCode uint32) {
 
 // Headers implements the same method as documented on api.Response.
 func (wasmResponse) Headers() api.Header {
-	return wasmResponseHeaders
+	return wasmHeaders
 }
 
 // Body implements the same method as documented on api.Response.

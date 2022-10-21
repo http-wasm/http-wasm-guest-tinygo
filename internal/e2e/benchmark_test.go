@@ -120,61 +120,82 @@ var benches = map[string]struct {
 		},
 		request: get,
 	},
-	"get_request_header_names none": {
+	"get_header_names none": {
 		bins: map[string][]byte{
-			"TinyGo": test.BinBenchGetRequestHeaderNamesTinyGo,
-			"wat":    test.BinBenchGetRequestHeaderNamesWat,
+			"TinyGo": test.BinBenchGetHeaderValuesNamesTinyGo,
+			"wat":    test.BinBenchGetHeaderValuesNamesWat,
 		},
 		request: getWithoutHeaders,
 	},
-	"get_request_header_names": {
+	"get_header_names": {
 		bins: map[string][]byte{
-			"TinyGo": test.BinBenchGetRequestHeaderNamesTinyGo,
-			"wat":    test.BinBenchGetRequestHeaderNamesWat,
+			"TinyGo": test.BinBenchGetHeaderValuesNamesTinyGo,
+			"wat":    test.BinBenchGetHeaderValuesNamesWat,
 		},
 		request: get,
 	},
-	"get_request_header_names large": {
+	"get_header_names large": {
 		bins: map[string][]byte{
-			"TinyGo": test.BinBenchGetRequestHeaderNamesTinyGo,
-			"wat":    test.BinBenchGetRequestHeaderNamesWat,
+			"TinyGo": test.BinBenchGetHeaderValuesNamesTinyGo,
+			"wat":    test.BinBenchGetHeaderValuesNamesWat,
 		},
 		request: getWithLargeHeader,
 	},
-	"get_request_header exists": {
+	"get_header_values exists": {
 		bins: map[string][]byte{
-			"TinyGo": test.BinBenchGetRequestHeaderTinyGo,
-			"wat":    test.BinBenchGetRequestHeaderWat,
+			"TinyGo": test.BinBenchGetHeaderValuesTinyGo,
+			"wat":    test.BinBenchGetHeaderValuesWat,
 		},
 		request: get,
 	},
-	"get_request_header not exists": {
+	"get_header_values not exists": {
 		bins: map[string][]byte{
-			"TinyGo": test.BinBenchGetRequestHeaderTinyGo,
-			"wat":    test.BinBenchGetRequestHeaderWat,
+			"TinyGo": test.BinBenchGetHeaderValuesTinyGo,
+			"wat":    test.BinBenchGetHeaderValuesWat,
 		},
 		request: getWithoutHeaders,
 	},
-	"read_request_body": {
+	"set_header_value exists": {
 		bins: map[string][]byte{
-			"TinyGo": test.BinBenchReadRequestBodyTinyGo,
-			"wat":    test.BinBenchReadRequestBodyWat,
+			"TinyGo": test.BinBenchSetHeaderValueTinyGo,
+			"wat":    test.BinBenchSetHeaderValueWat,
+		},
+		request: get,
+	},
+	"set_header_value not exists": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinBenchSetHeaderValueTinyGo,
+			"wat":    test.BinBenchSetHeaderValueWat,
+		},
+		request: getWithoutHeaders,
+	},
+	"read_body": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinBenchReadBodyTinyGo,
+			"wat":    test.BinBenchReadBodyWat,
 		},
 		request: post,
 	},
-	"read_request_body_stream": {
+	"read_body_stream": {
 		bins: map[string][]byte{
-			"TinyGo": test.BinBenchReadRequestBodyStreamTinyGo,
-			"wat":    test.BinBenchReadRequestBodyStreamWat,
+			"TinyGo": test.BinBenchReadBodyStreamTinyGo,
+			"wat":    test.BinBenchReadBodyStreamWat,
 		},
 		request: post,
 	},
-	"read_request_body_stream large": {
+	"read_body_stream large": {
 		bins: map[string][]byte{
-			"TinyGo": test.BinBenchReadRequestBodyStreamTinyGo,
-			"wat":    test.BinBenchReadRequestBodyStreamWat,
+			"TinyGo": test.BinBenchReadBodyStreamTinyGo,
+			"wat":    test.BinBenchReadBodyStreamWat,
 		},
 		request: postLarge,
+	},
+	"write_body": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinBenchWriteBodyTinyGo,
+			"wat":    test.BinBenchWriteBodyWat,
+		},
+		request: get,
 	},
 	"next": {
 		bins: map[string][]byte{
@@ -187,20 +208,6 @@ var benches = map[string]struct {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchSetStatusCodeTinyGo,
 			"wat":    test.BinBenchSetStatusCodeWat,
-		},
-		request: get,
-	},
-	"set_response_header": {
-		bins: map[string][]byte{
-			"TinyGo": test.BinBenchSetResponseHeaderTinyGo,
-			"wat":    test.BinBenchSetResponseHeaderWat,
-		},
-		request: get,
-	},
-	"write_response_body": {
-		bins: map[string][]byte{
-			"TinyGo": test.BinBenchWriteResponseBodyTinyGo,
-			"wat":    test.BinBenchWriteResponseBodyWat,
 		},
 		request: get,
 	},

@@ -12,8 +12,8 @@ func main() {
 var log = httpwasm.Host.Log
 
 func logAround(req api.Request, resp api.Response, next api.Next) {
-	log("before")
-	defer log("after")
+	log(api.LogLevelInfo, "before")
+	defer log(api.LogLevelInfo, "after")
 
 	next()
 }
