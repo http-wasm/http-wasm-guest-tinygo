@@ -37,7 +37,14 @@ type Host interface {
 	// GetConfig reads any configuration set by the host.
 	GetConfig() []byte
 
-	// Log logs a message to the host's logs.
+	// LogEnabled returns true if the LogLevel is enabled. This value may
+	// be cached at request granularity.
+	//
+	// This function is used to avoid unnecessary overhead generating log
+	// messages that the host would discard due to its level being below this.
+	LogEnabled(LogLevel) bool
+
+	// Log logs a message to the host's logs at the given LogLevel.
 	Log(LogLevel, string)
 }
 
@@ -135,8 +142,14 @@ type Header interface {
 	// GetAll returns all values for the given name, or nil if there are none.
 	GetAll(name string) []string
 
-	// Set adds or overwrites the header with the given value.
+	// Set overwrites any header values for the given name.
 	Set(name, value string)
+
+	// Add adds a header value for the given name.
+	Add(name, value string)
+
+	// Remove removes all values for the given name.
+	Remove(name string)
 }
 
 // Body is the HTTP message body.

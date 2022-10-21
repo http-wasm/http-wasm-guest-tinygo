@@ -169,6 +169,34 @@ var benches = map[string]struct {
 		},
 		request: getWithoutHeaders,
 	},
+	"add_header_value exists": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinBenchAddHeaderValueTinyGo,
+			"wat":    test.BinBenchAddHeaderValueWat,
+		},
+		request: get,
+	},
+	"add_header_value not exists": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinBenchAddHeaderValueTinyGo,
+			"wat":    test.BinBenchAddHeaderValueWat,
+		},
+		request: getWithoutHeaders,
+	},
+	"remove_header exists": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinBenchRemoveHeaderTinyGo,
+			"wat":    test.BinBenchRemoveHeaderWat,
+		},
+		request: get,
+	},
+	"remove_header not exists": {
+		bins: map[string][]byte{
+			"TinyGo": test.BinBenchRemoveHeaderTinyGo,
+			"wat":    test.BinBenchRemoveHeaderWat,
+		},
+		request: getWithoutHeaders,
+	},
 	"read_body": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchReadBodyTinyGo,

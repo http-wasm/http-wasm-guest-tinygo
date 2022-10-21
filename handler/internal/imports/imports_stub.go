@@ -17,6 +17,9 @@ func getConfig(ptr uintptr, limit uint32) (len uint32) {
 // log is stubbed for compilation outside TinyGo.
 func log(level api.LogLevel, ptr uintptr, size uint32) {}
 
+// logEnabled is stubbed for compilation outside TinyGo.
+func logEnabled(level api.LogLevel) uint32 { return 0 }
+
 // getMethod is stubbed for compilation outside TinyGo.
 func getMethod(ptr uintptr, limit uint32) (len uint32) {
 	return 0
@@ -51,6 +54,13 @@ func getHeaderValues(kind HeaderKind, namePtr uintptr, nameSize uint32, bufPtr u
 // setHeaderValue is stubbed for compilation outside TinyGo.
 func setHeaderValue(kind HeaderKind, namePtr uintptr, nameSize uint32, valuePtr uintptr, valueLen uint32) {
 }
+
+// addHeaderValue is stubbed for compilation outside TinyGo.
+func addHeaderValue(kind HeaderKind, namePtr uintptr, nameSize uint32, valuePtr uintptr, valueLen uint32) {
+}
+
+// removeHeader is stubbed for compilation outside TinyGo.
+func removeHeader(kind HeaderKind, namePtr uintptr, nameSize uint32) {}
 
 // readBody is stubbed for compilation outside TinyGo.
 func readBody(kind BodyKind, bufPtr uintptr, bufLimit uint32) (eofLen uint64) {

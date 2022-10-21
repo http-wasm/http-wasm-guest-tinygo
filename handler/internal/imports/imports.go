@@ -17,6 +17,10 @@ func getConfig(ptr uintptr, limit uint32) (len uint32)
 func log(level api.LogLevel, ptr uintptr, size uint32)
 
 //go:wasm-module http-handler
+//go:export log_enabled
+func logEnabled(level api.LogLevel) uint32
+
+//go:wasm-module http-handler
 //go:export get_method
 func getMethod(ptr uintptr, limit uint32) (len uint32)
 
@@ -47,6 +51,14 @@ func getHeaderValues(kind HeaderKind, namePtr uintptr, nameSize uint32, bufPtr u
 //go:wasm-module http-handler
 //go:export set_header_value
 func setHeaderValue(kind HeaderKind, namePtr uintptr, nameSize uint32, valuePtr uintptr, valueLen uint32)
+
+//go:wasm-module http-handler
+//go:export add_header_value
+func addHeaderValue(kind HeaderKind, namePtr uintptr, nameSize uint32, valuePtr uintptr, valueLen uint32)
+
+//go:wasm-module http-handler
+//go:export remove_header
+func removeHeader(kind HeaderKind, namePtr uintptr, nameSize uint32)
 
 //go:wasm-module http-handler
 //go:export read_body
