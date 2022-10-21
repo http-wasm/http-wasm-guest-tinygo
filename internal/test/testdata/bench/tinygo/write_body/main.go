@@ -5,10 +5,12 @@ import (
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 )
 
+var body = []byte("hello world")
+
 func main() {
-	handler.HandleFn = log
+	handler.HandleFn = writeBody
 }
 
-func log(req api.Request, resp api.Response, next api.Next) {
-	handler.Host.Log(api.LogLevelInfo, "hello world")
+func writeBody(req api.Request, resp api.Response, next api.Next) {
+	resp.Body().Write(body)
 }

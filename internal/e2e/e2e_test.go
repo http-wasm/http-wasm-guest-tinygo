@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	httpwasm "github.com/http-wasm/http-wasm-host-go"
+	"github.com/http-wasm/http-wasm-host-go/api"
 	nethttp "github.com/http-wasm/http-wasm-host-go/handler/nethttp"
 	"github.com/stretchr/testify/require"
 	"github.com/tetratelabs/wazero"
@@ -21,6 +22,23 @@ import (
 
 // testCtx is an arbitrary, non-default context. Non-nil also prevents linter errors.
 var testCtx = context.WithValue(context.Background(), struct{}{}, "arbitrary")
+
+// compile-time check to ensure recordingLogger implements api.Logger.
+var _ api.Logger = &recordingLogger{}
+
+type recordingLogger struct {
+	logMessages []string
+}
+
+func (r *recordingLogger) IsEnabled(level api.LogLevel) bool {
+	return level == api.LogLevelInfo
+}
+
+func (r *recordingLogger) Log(ctx context.Context, level api.LogLevel, message string) {
+	if level == api.LogLevelInfo {
+		r.logMessages = append(r.logMessages, message)
+	}
+}
 
 func Test_EndToEnd(t *testing.T) {
 	type testCase struct {
@@ -120,12 +138,11 @@ func Test_EndToEnd(t *testing.T) {
 			var stdoutBuf, stderrBuf bytes.Buffer
 			moduleConfig := wazero.NewModuleConfig().WithStdout(&stdoutBuf).WithStderr(&stderrBuf)
 
-			var logMessages []string
-			logger := func(_ context.Context, message string) { logMessages = append(logMessages, message) }
+			logger := recordingLogger{}
 
 			// Configure and compile the WebAssembly guest binary.
 			mw, err := nethttp.NewMiddleware(testCtx, tc.bin,
-				httpwasm.Logger(logger), httpwasm.ModuleConfig(moduleConfig))
+				httpwasm.Logger(&logger), httpwasm.ModuleConfig(moduleConfig))
 			if err != nil {
 				t.Error(err)
 			}
@@ -145,7 +162,7 @@ func Test_EndToEnd(t *testing.T) {
 			defer resp.Body.Close()
 
 			content, _ := io.ReadAll(resp.Body)
-			tc.test(t, content, logMessages, stdoutBuf.String(), stderrBuf.String())
+			tc.test(t, content, logger.logMessages, stdoutBuf.String(), stderrBuf.String())
 		})
 	}
 }

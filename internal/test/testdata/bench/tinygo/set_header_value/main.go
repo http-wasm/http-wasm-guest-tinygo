@@ -6,9 +6,9 @@ import (
 )
 
 func main() {
-	handler.HandleFn = log
+	handler.HandleFn = setHeader
 }
 
-func log(req api.Request, resp api.Response, next api.Next) {
-	handler.Host.Log(api.LogLevelInfo, "hello world")
+func setHeader(req api.Request, resp api.Response, next api.Next) {
+	resp.Headers().Set("Content-Type", "text/plain")
 }
