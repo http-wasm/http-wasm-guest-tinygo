@@ -22,6 +22,14 @@ func (wasmHost) GetConfig() []byte {
 	return mem.GetBytes(imports.GetConfig)
 }
 
+// LogEnabled implements the same method as documented on api.Host.
+func (h wasmHost) LogEnabled(level api.LogLevel) bool {
+	if enabled := imports.LogEnabled(level); enabled == 1 {
+		return true
+	}
+	return false
+}
+
 // Log implements the same method as documented on api.Host.
 func (wasmHost) Log(level api.LogLevel, message string) {
 	if len(message) == 0 {

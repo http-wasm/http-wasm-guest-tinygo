@@ -45,6 +45,18 @@ var BinBenchSetHeaderValueTinyGo []byte
 //go:embed testdata/bench/wat/set_header_value.wasm
 var BinBenchSetHeaderValueWat []byte
 
+//go:embed testdata/bench/tinygo/add_header_value/main.wasm
+var BinBenchAddHeaderValueTinyGo []byte
+
+//go:embed testdata/bench/wat/add_header_value.wasm
+var BinBenchAddHeaderValueWat []byte
+
+//go:embed testdata/bench/tinygo/remove_header/main.wasm
+var BinBenchRemoveHeaderTinyGo []byte
+
+//go:embed testdata/bench/wat/remove_header.wasm
+var BinBenchRemoveHeaderWat []byte
+
 //go:embed testdata/bench/tinygo/read_body/main.wasm
 var BinBenchReadBodyTinyGo []byte
 

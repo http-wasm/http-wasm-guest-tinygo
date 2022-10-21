@@ -72,3 +72,16 @@ func (w wasmHeader) Set(name, value string) {
 	valuePtr, valueSize := mem.StringToPtr(value)
 	imports.SetHeaderValue(imports.HeaderKind(w), namePtr, nameSize, valuePtr, valueSize)
 }
+
+// Add implements the same method as documented on api.Request.
+func (w wasmHeader) Add(name, value string) {
+	namePtr, nameSize := mem.StringToPtr(name)
+	valuePtr, valueSize := mem.StringToPtr(value)
+	imports.AddHeaderValue(imports.HeaderKind(w), namePtr, nameSize, valuePtr, valueSize)
+}
+
+// Remove implements the same method as documented on api.Request.
+func (w wasmHeader) Remove(name string) {
+	namePtr, nameSize := mem.StringToPtr(name)
+	imports.RemoveHeader(imports.HeaderKind(w), namePtr, nameSize)
+}

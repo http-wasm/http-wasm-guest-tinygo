@@ -89,6 +89,10 @@ func GetConfig(ptr uintptr, limit uint32) (len uint32) {
 	return getConfig(ptr, limit)
 }
 
+func LogEnabled(level api.LogLevel) uint32 {
+	return logEnabled(level)
+}
+
 func Log(level api.LogLevel, ptr uintptr, size uint32) {
 	log(level, ptr, size)
 }
@@ -123,6 +127,14 @@ func GetHeaderValues(kind HeaderKind, namePtr uintptr, nameSize uint32, bufPtr u
 
 func SetHeaderValue(kind HeaderKind, namePtr uintptr, nameSize uint32, valuePtr uintptr, valueSize uint32) {
 	setHeaderValue(kind, namePtr, nameSize, valuePtr, valueSize)
+}
+
+func AddHeaderValue(kind HeaderKind, namePtr uintptr, nameSize uint32, valuePtr uintptr, valueSize uint32) {
+	addHeaderValue(kind, namePtr, nameSize, valuePtr, valueSize)
+}
+
+func RemoveHeader(kind HeaderKind, namePtr uintptr, nameSize uint32) {
+	removeHeader(kind, namePtr, nameSize)
 }
 
 func ReadBody(kind BodyKind, bufPtr uintptr, bufLimit uint32) (eofLen uint64) {
