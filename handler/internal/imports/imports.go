@@ -6,11 +6,11 @@ import "github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 
 //go:wasm-module http-handler
 //go:export enable_features
-func enableFeatures(features uint64) uint64
+func enableFeatures(features api.Features) api.Features
 
 //go:wasm-module http-handler
 //go:export get_config
-func getConfig(ptr uintptr, limit uint32) (len uint32)
+func getConfig(ptr uintptr, limit BufLimit) (len uint32)
 
 //go:wasm-module http-handler
 //go:export log
@@ -22,7 +22,7 @@ func logEnabled(level api.LogLevel) uint32
 
 //go:wasm-module http-handler
 //go:export get_method
-func getMethod(ptr uintptr, limit uint32) (len uint32)
+func getMethod(ptr uintptr, limit BufLimit) (len uint32)
 
 //go:wasm-module http-handler
 //go:export set_method
@@ -30,7 +30,7 @@ func setMethod(ptr uintptr, size uint32)
 
 //go:wasm-module http-handler
 //go:export get_uri
-func getURI(ptr uintptr, limit uint32) (len uint32)
+func getURI(ptr uintptr, limit BufLimit) (len uint32)
 
 //go:wasm-module http-handler
 //go:export set_uri
@@ -38,15 +38,15 @@ func setURI(ptr uintptr, size uint32)
 
 //go:wasm-module http-handler
 //go:export get_protocol_version
-func getProtocolVersion(ptr uintptr, limit uint32) (len uint32)
+func getProtocolVersion(ptr uintptr, limit BufLimit) (len uint32)
 
 //go:wasm-module http-handler
 //go:export get_header_names
-func getHeaderNames(kind HeaderKind, ptr uintptr, limit uint32) (countLen CountLen)
+func getHeaderNames(kind HeaderKind, ptr uintptr, limit BufLimit) (countLen CountLen)
 
 //go:wasm-module http-handler
 //go:export get_header_values
-func getHeaderValues(kind HeaderKind, namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (countLen CountLen)
+func getHeaderValues(kind HeaderKind, namePtr uintptr, nameSize uint32, bufPtr uintptr, buflimit BufLimit) (countLen CountLen)
 
 //go:wasm-module http-handler
 //go:export set_header_value
@@ -62,7 +62,7 @@ func removeHeader(kind HeaderKind, namePtr uintptr, nameSize uint32)
 
 //go:wasm-module http-handler
 //go:export read_body
-func readBody(kind BodyKind, bufPtr uintptr, bufLimit uint32) (eofLen uint64)
+func readBody(kind BodyKind, bufPtr uintptr, buflimit BufLimit) (eofLen EOFLen)
 
 //go:wasm-module http-handler
 //go:export write_body

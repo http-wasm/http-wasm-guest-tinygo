@@ -14,7 +14,7 @@ var _ api.Host = wasmHost{}
 
 // EnableFeatures implements the same method as documented on api.Host.
 func (wasmHost) EnableFeatures(features api.Features) api.Features {
-	return api.Features(imports.EnableFeatures(uint64(features)))
+	return imports.EnableFeatures(features)
 }
 
 // GetConfig implements the same method as documented on api.Host.

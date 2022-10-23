@@ -49,7 +49,7 @@ func (b wasmBody) Read(bytes []byte) (size uint32, eof bool) {
 	return read(b, ptr, limit)
 }
 
-func read(b wasmBody, ptr uintptr, limit uint32) (size uint32, eof bool) {
+func read(b wasmBody, ptr uintptr, limit imports.BufLimit) (size uint32, eof bool) {
 	eofLen := imports.ReadBody(imports.BodyKind(b), ptr, limit)
 	eof = (eofLen >> 32) == 1
 	size = uint32(eofLen)
