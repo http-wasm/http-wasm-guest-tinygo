@@ -4,17 +4,14 @@ import "io"
 
 // LogLevel controls the volume of logging. The lower the number the more
 // detail is logged.
-//
-// Note: The most voluminous level, LogLevelDebug is -1 to prevent users from
-// accidentally defaulting to it.
 type LogLevel int32
 
 const (
-	LogLevelDebug LogLevel = -1
-	LogLevelInfo  LogLevel = 0
-	LogLevelWarn  LogLevel = 1
-	LogLevelError LogLevel = 2
-	LogLevelNone  LogLevel = 3
+	LogLevelDebug LogLevel = 0
+	LogLevelInfo  LogLevel = 1
+	LogLevelWarn  LogLevel = 2
+	LogLevelError LogLevel = 3
+	LogLevelNone  LogLevel = 4
 )
 
 // Host is the WebAssembly host that accepts server requests. For example,

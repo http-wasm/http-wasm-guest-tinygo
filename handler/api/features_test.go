@@ -23,7 +23,7 @@ func TestFeatures(t *testing.T) {
 	}{
 		{
 			name:    "one is the smallest flag",
-			feature: 1,
+			feature: 11,
 		},
 		{
 			name:    "31 is the largest feature flag", // because uint32
