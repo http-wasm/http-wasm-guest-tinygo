@@ -4,6 +4,11 @@ package imports
 
 import "github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 
+// BufLimit is the possibly zero maximum length of a result value to write in
+// bytes. If the actual value is larger than this, nothing is written to
+// memory.
+type BufLimit = uint32
+
 // CountLen describes a possible empty sequence of NUL-terminated strings. For
 // compatability with WebAssembly Core Specification 1.0, two uint32 values are
 // combined into a single uint64 in the following order:
@@ -24,7 +29,28 @@ import "github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 //   - "Content-Type\0Content-Length\0": 2<<32|28
 type CountLen = uint64
 
-type BodyKind = uint32
+// EOFLen is the result of FuncReadBody which allows callers to know if the
+// bytes returned are the end of the stream. For compatability with WebAssembly
+// Core Specification 1.0, two uint32 values are combined into a single uint64
+// in the following order:
+//
+//   - eof: the body is exhausted.
+//   - len: possibly zero length of bytes read from the body.
+//
+// Here's how to split the results:
+//
+//   - eof: `uint32(eofLen >> 32)`
+//   - len: `uint32(eofLen)`
+//
+// # Examples
+//
+//   - 1<<32|0 (4294967296): EOF and no bytes were read
+//   - 0<<32|16 (16): 16 bytes were read and there may be more available.
+//
+// Note: `EOF` is not an error, so process `len` bytes returned regardless.
+type EOFLen = uint64
+
+type BodyKind uint32
 
 const (
 	// BodyKindRequest represents an operation on an HTTP request body.
@@ -57,7 +83,7 @@ const (
 	BodyKindResponse BodyKind = 1
 )
 
-type HeaderKind = uint32
+type HeaderKind uint32
 
 const (
 	// HeaderKindRequest represents an operation on HTTP request headers.
@@ -81,11 +107,11 @@ const (
 	HeaderKindResponseTrailers HeaderKind = 3
 )
 
-func EnableFeatures(features uint64) uint64 {
+func EnableFeatures(features api.Features) api.Features {
 	return enableFeatures(features)
 }
 
-func GetConfig(ptr uintptr, limit uint32) (len uint32) {
+func GetConfig(ptr uintptr, limit BufLimit) (len uint32) {
 	return getConfig(ptr, limit)
 }
 
@@ -97,7 +123,7 @@ func Log(level api.LogLevel, ptr uintptr, size uint32) {
 	log(level, ptr, size)
 }
 
-func GetMethod(ptr uintptr, limit uint32) (len uint32) {
+func GetMethod(ptr uintptr, limit BufLimit) (len uint32) {
 	return getMethod(ptr, limit)
 }
 
@@ -105,7 +131,7 @@ func SetMethod(ptr uintptr, size uint32) {
 	setMethod(ptr, size)
 }
 
-func GetURI(ptr uintptr, limit uint32) (len uint32) {
+func GetURI(ptr uintptr, limit BufLimit) (len uint32) {
 	return getURI(ptr, limit)
 }
 
@@ -113,15 +139,15 @@ func SetURI(ptr uintptr, size uint32) {
 	setURI(ptr, size)
 }
 
-func GetProtocolVersion(ptr uintptr, limit uint32) (len uint32) {
+func GetProtocolVersion(ptr uintptr, limit BufLimit) (len uint32) {
 	return getProtocolVersion(ptr, limit)
 }
 
-func GetHeaderNames(kind HeaderKind, ptr uintptr, limit uint32) (countLen CountLen) {
+func GetHeaderNames(kind HeaderKind, ptr uintptr, limit BufLimit) CountLen {
 	return getHeaderNames(kind, ptr, limit)
 }
 
-func GetHeaderValues(kind HeaderKind, namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (countLen CountLen) {
+func GetHeaderValues(kind HeaderKind, namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit BufLimit) CountLen {
 	return getHeaderValues(kind, namePtr, nameSize, bufPtr, bufLimit)
 }
 
@@ -137,7 +163,7 @@ func RemoveHeader(kind HeaderKind, namePtr uintptr, nameSize uint32) {
 	removeHeader(kind, namePtr, nameSize)
 }
 
-func ReadBody(kind BodyKind, bufPtr uintptr, bufLimit uint32) (eofLen uint64) {
+func ReadBody(kind BodyKind, bufPtr uintptr, bufLimit BufLimit) EOFLen {
 	return readBody(kind, bufPtr, bufLimit)
 }
 

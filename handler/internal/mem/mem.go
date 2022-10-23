@@ -1,6 +1,10 @@
 package mem
 
-import "unsafe"
+import (
+	"unsafe"
+
+	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/imports"
+)
 
 var (
 	// ReadBuf is sharable because there is no parallelism in wasm.
@@ -23,7 +27,7 @@ func StringToPtr(s string) (uintptr, uint32) {
 	return unsafePtr, uint32(len(buf))
 }
 
-func GetString(fn func(ptr uintptr, limit uint32) (len uint32)) (result string) {
+func GetString(fn func(ptr uintptr, limit imports.BufLimit) (len uint32)) (result string) {
 	size := fn(ReadBufPtr, ReadBufLimit)
 	if size == 0 {
 		return
@@ -40,7 +44,7 @@ func GetString(fn func(ptr uintptr, limit uint32) (len uint32)) (result string) 
 	return *(*string)(unsafe.Pointer(&s))
 }
 
-func GetBytes(fn func(ptr uintptr, limit uint32) (len uint32)) (result []byte) {
+func GetBytes(fn func(ptr uintptr, limit imports.BufLimit) (len uint32)) (result []byte) {
 	size := fn(ReadBufPtr, ReadBufLimit)
 	if size == 0 {
 		return

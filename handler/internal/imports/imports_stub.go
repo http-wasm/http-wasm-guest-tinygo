@@ -5,12 +5,12 @@ package imports
 import "github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 
 // enableFeatures is stubbed for compilation outside TinyGo.
-func enableFeatures(features uint64) uint64 {
+func enableFeatures(features api.Features) api.Features {
 	return features
 }
 
 // getConfig is stubbed for compilation outside TinyGo.
-func getConfig(ptr uintptr, limit uint32) (len uint32) {
+func getConfig(ptr uintptr, limit BufLimit) (len uint32) {
 	return 0
 }
 
@@ -21,7 +21,7 @@ func log(level api.LogLevel, ptr uintptr, size uint32) {}
 func logEnabled(level api.LogLevel) uint32 { return 0 }
 
 // getMethod is stubbed for compilation outside TinyGo.
-func getMethod(ptr uintptr, limit uint32) (len uint32) {
+func getMethod(ptr uintptr, limit BufLimit) (len uint32) {
 	return 0
 }
 
@@ -29,7 +29,7 @@ func getMethod(ptr uintptr, limit uint32) (len uint32) {
 func setMethod(ptr uintptr, size uint32) {}
 
 // getURI is stubbed for compilation outside TinyGo.
-func getURI(ptr uintptr, limit uint32) (len uint32) {
+func getURI(ptr uintptr, limit BufLimit) (len uint32) {
 	return 0
 }
 
@@ -37,17 +37,17 @@ func getURI(ptr uintptr, limit uint32) (len uint32) {
 func setURI(ptr uintptr, size uint32) {}
 
 // getProtocolVersion is stubbed for compilation outside TinyGo.
-func getProtocolVersion(ptr uintptr, limit uint32) (len uint32) {
+func getProtocolVersion(ptr uintptr, limit BufLimit) (len uint32) {
 	return 0
 }
 
 // getHeaderNames is stubbed for compilation outside TinyGo.
-func getHeaderNames(kind HeaderKind, ptr uintptr, limit uint32) (countLen CountLen) {
+func getHeaderNames(kind HeaderKind, ptr uintptr, limit BufLimit) (countLen CountLen) {
 	return 0
 }
 
 // getHeaderValues is stubbed for compilation outside TinyGo.
-func getHeaderValues(kind HeaderKind, namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit uint32) (countLen CountLen) {
+func getHeaderValues(kind HeaderKind, namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit BufLimit) (countLen CountLen) {
 	return 0
 }
 
@@ -63,7 +63,7 @@ func addHeaderValue(kind HeaderKind, namePtr uintptr, nameSize uint32, valuePtr 
 func removeHeader(kind HeaderKind, namePtr uintptr, nameSize uint32) {}
 
 // readBody is stubbed for compilation outside TinyGo.
-func readBody(kind BodyKind, bufPtr uintptr, bufLimit uint32) (eofLen uint64) {
+func readBody(kind BodyKind, bufPtr uintptr, bufLimit BufLimit) (eofLen EOFLen) {
 	return 0
 }
 
