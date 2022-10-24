@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/http-wasm/http-wasm-guest-tinygo v0.0.0
-	github.com/http-wasm/http-wasm-host-go v0.0.0-20221024020750-5b0687368196
+	github.com/http-wasm/http-wasm-host-go v0.0.0-20221024045145-11329b5067e7
 	github.com/stretchr/testify v1.8.0
 	github.com/tetratelabs/wazero v1.0.0-pre.2.0.20221003082636-0b4dbfd8d6ca
 )
