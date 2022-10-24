@@ -111,14 +111,14 @@ var benches = map[string]struct {
 			"TinyGo": test.BinBenchGetURITinyGo,
 			"wat":    test.BinBenchGetURIWat,
 		},
-		request: get,
+		request: getWithQuery,
 	},
 	"set_uri": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchSetURITinyGo,
 			"wat":    test.BinBenchSetURIWat,
 		},
-		request: get,
+		request: getWithQuery,
 	},
 	"get_header_names none": {
 		bins: map[string][]byte{

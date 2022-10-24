@@ -84,14 +84,14 @@ func Test_EndToEnd(t *testing.T) {
 			},
 		},
 		{
-			name:    "example wasi",
+			name:    "example wasi tinygo",
 			bin:     test.BinExampleWASI,
 			request: test.RequestExampleWASI,
 			next:    test.HandlerExampleWASI,
 			test:    testConsole,
 		},
 		{
-			name:    "wasi - wat", // makes sure the implementations match!
+			name:    "example wasi wat", // makes sure the implementations match!
 			bin:     test.BinExampleWASIWat,
 			request: test.RequestExampleWASI,
 			next:    test.HandlerExampleWASI,
@@ -107,7 +107,7 @@ func Test_EndToEnd(t *testing.T) {
 			next: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			}),
 			test: func(t *testing.T, content []byte, logMessages []string, stdout, stderr string) {
-				require.Equal(t, "buffer-request|buffer-response", string(content))
+				require.Equal(t, "buffer_request|buffer_response", string(content))
 				require.Empty(t, stderr)
 				require.Empty(t, stdout)
 				require.Empty(t, logMessages)
