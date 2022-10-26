@@ -6,9 +6,10 @@ import (
 )
 
 func main() {
-	handler.HandleFn = log
+	handler.HandleRequestFn = log
 }
 
-func log(req api.Request, resp api.Response, next api.Next) {
+func log(req api.Request, resp api.Response) (next bool, reqCtx uint32) {
 	handler.Host.Log(api.LogLevelInfo, "hello world")
+	return // this is a benchmark, so skip the next handler.
 }

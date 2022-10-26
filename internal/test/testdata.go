@@ -75,12 +75,6 @@ var BinBenchReadBodyStreamTinyGo []byte
 //go:embed testdata/bench/wat/read_body_stream.wasm
 var BinBenchReadBodyStreamWat []byte
 
-//go:embed testdata/bench/tinygo/next/main.wasm
-var BinBenchNextTinyGo []byte
-
-//go:embed testdata/bench/wat/next.wasm
-var BinBenchNextWat []byte
-
 //go:embed testdata/bench/tinygo/set_status_code/main.wasm
 var BinBenchSetStatusCodeTinyGo []byte
 
@@ -123,6 +117,9 @@ var HandlerExampleWASI = http.HandlerFunc(func(w http.ResponseWriter, r *http.Re
 
 //go:embed testdata/e2e/tinygo/features/main.wasm
 var BinE2EFeaturesTinyGo []byte
+
+//go:embed testdata/e2e/tinygo/handle_response/main.wasm
+var BinHandleResponse []byte
 
 //go:embed testdata/e2e/tinygo/log/main.wasm
 var BinE2ELog []byte

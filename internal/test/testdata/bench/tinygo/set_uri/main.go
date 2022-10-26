@@ -6,9 +6,10 @@ import (
 )
 
 func main() {
-	handler.HandleFn = setURI
+	handler.HandleRequestFn = setURI
 }
 
-func setURI(req api.Request, resp api.Response, next api.Next) {
+func setURI(req api.Request, resp api.Response) (next bool, reqCtx uint32) {
 	req.SetURI("/v1.0/hello")
+	return // this is a benchmark, so skip the next handler.
 }

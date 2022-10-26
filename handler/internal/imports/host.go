@@ -171,10 +171,6 @@ func WriteBody(kind BodyKind, bufPtr uintptr, bufSize uint32) {
 	writeBody(kind, bufPtr, bufSize)
 }
 
-func Next() {
-	next()
-}
-
 func GetStatusCode() uint32 {
 	return getStatusCode()
 }

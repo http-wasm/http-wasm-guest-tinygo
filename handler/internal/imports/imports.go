@@ -69,10 +69,6 @@ func readBody(kind BodyKind, bufPtr uintptr, buflimit BufLimit) (eofLen EOFLen)
 func writeBody(kind BodyKind, bufPtr uintptr, bufLen uint32)
 
 //go:wasm-module http_handler
-//go:export next
-func next()
-
-//go:wasm-module http_handler
 //go:export get_status_code
 func getStatusCode() uint32
 

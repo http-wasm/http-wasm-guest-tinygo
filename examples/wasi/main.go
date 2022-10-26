@@ -19,24 +19,32 @@ func main() {
 	if want, have := requiredFeatures, httpwasm.Host.EnableFeatures(requiredFeatures); !have.IsEnabled(want) {
 		panic("unexpected features, want: " + want.String() + ", have: " + have.String())
 	}
-	httpwasm.HandleFn = handle
+	httpwasm.HandleRequestFn = handleRequest
+	httpwasm.HandleResponseFn = handleResponse
 }
 
-// handle prints HTTP requests and responses to the console using os.Stdout.
+// handleRequest prints HTTP requests and responses to the console using os.Stdout.
 //
 // Note: Internally, TinyGo uses WASI to implement os.Stdout. For example,
 // writing is a call to the imported function `fd_write`.
-func handle(req api.Request, resp api.Response, next api.Next) {
+func handleRequest(req api.Request, _ api.Response) (next bool, reqCtx uint32) {
 	// Print the incoming request to the console.
 	printRequestLine(req)
 	printHeaders(req.Headers())
 	printBody(req.Body())
 	printHeaders(req.Trailers())
 
-	// Handle the request, in whichever way defined by the host.
-	next()
+	next = true // proceed to the next handler on the host.
+	return
+}
 
+func handleResponse(_ uint32, req api.Request, resp api.Response, isError bool) {
 	println()
+
+	if isError {
+		println("host error")
+		return
+	}
 
 	// Because we enabled buffering, we can read the response.
 	// Print it to the console.

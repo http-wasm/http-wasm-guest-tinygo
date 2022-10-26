@@ -114,6 +114,20 @@ func Test_EndToEnd(t *testing.T) {
 			},
 		},
 		{
+			name: "handle_response",
+			bin:  test.BinHandleResponse,
+			request: func(url string) (req *http.Request) {
+				req, _ = http.NewRequest(http.MethodGet, url, nil)
+				return
+			},
+			next: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(200)
+			}),
+			test: func(t *testing.T, content []byte, logMessages []string, stdout, stderr string) {
+				require.Equal(t, "43", string(content))
+			},
+		},
+		{
 			name: "log",
 			bin:  test.BinE2ELog,
 			request: func(url string) (req *http.Request) {

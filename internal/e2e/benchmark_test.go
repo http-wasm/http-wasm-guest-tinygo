@@ -225,13 +225,6 @@ var benches = map[string]struct {
 		},
 		request: get,
 	},
-	"next": {
-		bins: map[string][]byte{
-			"TinyGo": test.BinBenchNextTinyGo,
-			"wat":    test.BinBenchNextWat,
-		},
-		request: get,
-	},
 	"set_status_code": {
 		bins: map[string][]byte{
 			"TinyGo": test.BinBenchSetStatusCodeTinyGo,
