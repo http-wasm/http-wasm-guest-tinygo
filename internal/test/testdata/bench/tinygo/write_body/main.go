@@ -8,9 +8,10 @@ import (
 var body = []byte("hello world")
 
 func main() {
-	handler.HandleFn = writeBody
+	handler.HandleRequestFn = writeBody
 }
 
-func writeBody(req api.Request, resp api.Response, next api.Next) {
+func writeBody(req api.Request, resp api.Response) (next bool, reqCtx uint32) {
 	resp.Body().Write(body)
+	return // this is a benchmark, so skip the next handler.
 }

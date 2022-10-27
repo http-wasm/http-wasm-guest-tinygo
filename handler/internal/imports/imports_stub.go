@@ -70,9 +70,6 @@ func readBody(kind BodyKind, bufPtr uintptr, bufLimit BufLimit) (eofLen EOFLen) 
 // writeBody is stubbed for compilation outside TinyGo.
 func writeBody(kind BodyKind, bufPtr uintptr, bufLen uint32) {}
 
-// next is stubbed for compilation outside TinyGo.
-func next() {}
-
 // getStatusCode is stubbed for compilation outside TinyGo.
 func getStatusCode() uint32 {
 	return 0

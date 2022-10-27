@@ -6,9 +6,10 @@ import (
 )
 
 func main() {
-	handler.HandleFn = setHeader
+	handler.HandleRequestFn = setHeader
 }
 
-func setHeader(req api.Request, resp api.Response, next api.Next) {
+func setHeader(req api.Request, resp api.Response) (next bool, reqCtx uint32) {
 	resp.Headers().Set("Content-Type", "text/plain")
+	return // this is a benchmark, so skip the next handler.
 }

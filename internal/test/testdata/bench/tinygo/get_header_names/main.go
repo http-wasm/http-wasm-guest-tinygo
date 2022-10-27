@@ -6,9 +6,10 @@ import (
 )
 
 func main() {
-	handler.HandleFn = GetHeaderNames
+	handler.HandleRequestFn = GetHeaderNames
 }
 
-func GetHeaderNames(req api.Request, resp api.Response, next api.Next) {
+func GetHeaderNames(req api.Request, resp api.Response) (next bool, reqCtx uint32) {
 	_ = req.Headers().Names()
+	return // this is a benchmark, so skip the next handler.
 }

@@ -6,14 +6,18 @@ import (
 )
 
 func main() {
-	httpwasm.HandleFn = logAround
+	httpwasm.HandleRequestFn = logBefore
+	httpwasm.HandleResponseFn = logAfter
 }
 
 var log = httpwasm.Host.Log
 
-func logAround(req api.Request, resp api.Response, next api.Next) {
+func logBefore(api.Request, api.Response) (next bool, reqCtx uint32) {
 	log(api.LogLevelInfo, "before")
-	defer log(api.LogLevelInfo, "after")
+	next = true
+	return
+}
 
-	next()
+func logAfter(uint32, api.Request, api.Response, bool) {
+	log(api.LogLevelInfo, "after")
 }

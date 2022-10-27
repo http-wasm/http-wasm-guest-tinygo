@@ -6,12 +6,13 @@ import (
 )
 
 func main() {
-	handler.HandleFn = readBody
+	handler.HandleRequestFn = readBody
 }
 
 var empty = make([]byte, 0)
 
-func readBody(req api.Request, resp api.Response, next api.Next) {
+func readBody(req api.Request, resp api.Response) (next bool, reqCtx uint32) {
 	size, _ := req.Body().Read(empty)
 	_, _ = req.Body().Read(make([]byte, size))
+	return // this is a benchmark, so skip the next handler.
 }

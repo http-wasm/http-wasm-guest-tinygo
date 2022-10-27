@@ -48,31 +48,47 @@ type Host interface {
 	Log(LogLevel, string)
 }
 
-// Next dispatches control to the next handler defined on the Host.
+// HandleRequest is the entrypoint the Host calls when processing an HTTP
+// request. Default is to proceed to the next handler on the host.
 //
-// If buffering is enabled, the current Handler can access or modify the
-// response before returning.
-type Next func()
-
-// Handler is the entrypoint the Host calls when processing an HTTP request.
-// Implementations can choose to construct a response locally, or dispatch to
-// the Next handler. A no-op implementation results in an empty 200 response.
+// Implementations that construct a response locally should set `next=false`.
+// Otherwise, set `next=true` to proceed to the next handler on the host.
+// Handlers that require request correlation can optionally set reqCtx.
+// The host will propagate this value as the first parameter to HandleResponse.
 //
-// Ex. To modify the incoming request:
+// Here are some examples:
 //
-//	func router(req Request, _ Response, next Next) {
+// Modify the incoming request:
+//
+//	func router(req Request, _ Response) (next bool, reqCtx uint32) {
 //		if req.GetURI() == "/v1.0/hi?name=panda" {
 //			req.SetURI("/v1.0/hello?name=teddy")
 //		}
-//		next()
+//		next = true
+//		return
 //	}
 //
 // Ex. To serve a response locally:
 //
-//	func hello(_ Request, resp Response, _ Next) {
+//	func hello(req Request, resp Response) (next bool, reqCtx uint32) {
 //		resp.Body().WriteString("hello world")
 //	}
-type Handler func(req Request, resp Response, next Next)
+//
+// Return an empty 200 response
+//
+//	func noop(Request, Response) (next bool, reqCtx uint32) { }
+//
+// # Request Context
+//
+// Implementations who return `next=true` may also set request correlation
+// data as reqCtx. The host will propagate this to HandleResponse.
+type HandleRequest func(Request, Response) (next bool, reqCtx uint32)
+
+// HandleResponse is invoked when HandleRequest returned `next=true`. Its
+// possibly zero `reqCtx` result is propagated here.
+//
+// `isError=true` when the host erred since returning from HandleRequest.
+type HandleResponse func(reqCtx uint32, req Request, resp Response, isError bool)
 
 // Request is the incoming HTTP request sent by the client or an upstream
 // handler.
