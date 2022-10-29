@@ -11,8 +11,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	httpwasm "github.com/http-wasm/http-wasm-host-go"
 	"github.com/http-wasm/http-wasm-host-go/api"
+	"github.com/http-wasm/http-wasm-host-go/handler"
 	nethttp "github.com/http-wasm/http-wasm-host-go/handler/nethttp"
 	"github.com/stretchr/testify/require"
 	"github.com/tetratelabs/wazero"
@@ -156,7 +156,7 @@ func Test_EndToEnd(t *testing.T) {
 
 			// Configure and compile the WebAssembly guest binary.
 			mw, err := nethttp.NewMiddleware(testCtx, tc.bin,
-				httpwasm.Logger(&logger), httpwasm.ModuleConfig(moduleConfig))
+				handler.Logger(&logger), handler.ModuleConfig(moduleConfig))
 			if err != nil {
 				t.Error(err)
 			}
