@@ -47,17 +47,14 @@ tinygo build -o examples/router/main.wasm -scheduler=none --no-debug -target=was
 
 There are also more [examples](examples) you may wish to try out!
 
-# WARNING: This is a proof of concept!
+# WARNING: This is an early draft
 
-The current maturity phase is proof of concept. Once this has a working example
-in [dapr][6], we will go back and revisit things intentionally deferred.
-
-Meanwhile, minor details and test coverage will fall short of production
-standards. This helps us deliver the proof-of-concept faster and prevents
-wasted energy in the case that the concept isn't acceptable at all.
+The current maturity phase is early draft. Once this is integrated with
+[coraza][5] and [dapr][6], we can begin discussions about compatability.
 
 [1]: https://github.com/http-wasm
 [2]: https://webassembly.org/
 [3]: https://wazero.io/languages/tinygo/
 [4]: https://github.com/http-wasm/http-wasm-abi
-[5]: https://github.com/http-wasm/components-contrib/
+[5]: https://github.com/corazawaf/coraza-proxy-wasm
+[6]: https://github.com/http-wasm/components-contrib/
