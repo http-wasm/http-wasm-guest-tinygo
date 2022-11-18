@@ -1,6 +1,9 @@
 package api
 
-import "io"
+import (
+	"io"
+	"net/url"
+)
 
 // LogLevel controls the volume of logging. The lower the number the more
 // detail is logged.
@@ -61,8 +64,9 @@ type Host interface {
 // Modify the incoming request:
 //
 //	func router(req Request, _ Response) (next bool, reqCtx uint32) {
-//		if req.GetURI() == "/v1.0/hi?name=panda" {
-//			req.SetURI("/v1.0/hello?name=teddy")
+//		if u := req.GetURI(); u.RequestURI() == "/v1.0/hi?name=panda" {
+//			u.Path = "/v1.0/hello"
+//			req.SetURI(u)
 //		}
 //		next = true
 //		return
@@ -99,15 +103,11 @@ type Request interface {
 	// SetMethod overwrites the method.
 	SetMethod(method string)
 
-	// GetURI returns the request URI. Ex. "/v1.0/hi?name=panda"
-	//
-	// Note: The URI may include query parameters.
-	GetURI() string
+	// GetURI returns the request URI.
+	GetURI() url.URL
 
 	// SetURI overwrites the URI.
-	//
-	// Note: The URI may include query parameters.
-	SetURI(uri string)
+	SetURI(uri url.URL)
 
 	// GetProtocolVersion returns the HTTP protocol version. Ex. "HTTP/1.1"
 	GetProtocolVersion() string

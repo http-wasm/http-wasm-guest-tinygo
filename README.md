@@ -8,39 +8,42 @@
 This is a [TinyGo WASI][3] library that implements the [Guest ABI][4].
 
 ## Example
+
 The following is an [example](examples/router) of routing middleware:
 
 ```go
 package main
 
 import (
-	"strings"
+ "strings"
 
-	"github.com/http-wasm/http-wasm-guest-tinygo/handler"
-	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
+ "github.com/http-wasm/http-wasm-guest-tinygo/handler"
+ "github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 )
 
 func main() {
-	handler.HandleRequestFn = handleRequest
+ handler.HandleRequestFn = handleRequest
 }
 
 // handle implements a simple HTTP router.
 func handleRequest(req api.Request, resp api.Response) (next bool, reqCtx uint32) {
-	// If the URI starts with /host, trim it and dispatch to the next handler.
-	if uri := req.GetURI(); strings.HasPrefix(uri, "/host") {
-		req.SetURI(uri[5:])
-		next = true // proceed to the next handler on the host.
-		return
-	}
+ // If the URI starts with /host, trim it and dispatch to the next handler.
+ if uri := req.GetURI(); strings.HasPrefix(uri.Path, "/host") {
+  uri.Path = uri.Path[5:]
+  req.SetURI(uri)
+  next = true // proceed to the next handler on the host.
+  return
+ }
 
-	// Serve a static response
-	resp.Headers().Set("Content-Type", "text/plain")
-	resp.Body().WriteString("hello")
-	return // skip any handlers as the response is written.
+ // Serve a static response
+ resp.Headers().Set("Content-Type", "text/plain")
+ resp.Body().WriteString("hello")
+ return // skip any handlers as the response is written.
 }
 ```
 
 If you make changes, you can rebuild it like so:
+
 ```sh
 tinygo build -o examples/router/main.wasm -scheduler=none --no-debug -target=wasi examples/router/main.go
 ```

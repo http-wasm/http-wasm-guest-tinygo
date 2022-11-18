@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/url"
+
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 )
@@ -10,6 +12,7 @@ func main() {
 }
 
 func setURI(req api.Request, resp api.Response) (next bool, reqCtx uint32) {
-	req.SetURI("/v1.0/hello")
+	u, _ := url.ParseRequestURI("/v1.0/hello")
+	req.SetURI(*u)
 	return // this is a benchmark, so skip the next handler.
 }

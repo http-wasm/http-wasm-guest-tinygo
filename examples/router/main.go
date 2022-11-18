@@ -14,8 +14,9 @@ func main() {
 // handleRequest implements a simple HTTP router.
 func handleRequest(req api.Request, resp api.Response) (next bool, reqCtx uint32) {
 	// If the URI starts with /host, trim it and dispatch to the next handler.
-	if uri := req.GetURI(); strings.HasPrefix(uri, "/host") {
-		req.SetURI(uri[5:])
+	if uri := req.GetURI(); strings.HasPrefix(uri.Path, "/host") {
+		uri.Path = uri.Path[5:]
+		req.SetURI(uri)
 		next = true // proceed to the next handler on the host.
 		return
 	}

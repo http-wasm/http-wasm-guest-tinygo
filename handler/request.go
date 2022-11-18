@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"net/url"
+
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/imports"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/mem"
@@ -24,13 +26,14 @@ func (wasmRequest) SetMethod(method string) {
 }
 
 // GetURI implements the same method as documented on api.Request.
-func (wasmRequest) GetURI() string {
-	return mem.GetString(imports.GetURI)
+func (wasmRequest) GetURI() url.URL {
+	u, _ := url.Parse(mem.GetString(imports.GetURI))
+	return *u
 }
 
 // SetURI implements the same method as documented on api.Request.
-func (wasmRequest) SetURI(uri string) {
-	ptr, size := mem.StringToPtr(uri)
+func (wasmRequest) SetURI(uri url.URL) {
+	ptr, size := mem.StringToPtr(uri.String())
 	imports.SetURI(ptr, size)
 }
 
