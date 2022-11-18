@@ -57,7 +57,8 @@ func handleResponse(_ uint32, req api.Request, resp api.Response, isError bool) 
 // printRequestLine prints the request line to the wasi.
 // Ex "GET /a HTTP/1.1"
 func printRequestLine(req api.Request) {
-	println(req.GetMethod(), req.GetURI(), req.GetProtocolVersion())
+	u := req.GetURI()
+	println(req.GetMethod(), u.String(), req.GetProtocolVersion())
 }
 
 // printHeaders prints each header field to the wasi. Ex "a: b"
