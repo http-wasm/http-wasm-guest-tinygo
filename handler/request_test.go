@@ -2,11 +2,14 @@ package handler
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 func TestUnserializeURL(t *testing.T) {
-	require.Equal(t, "/", unserializeURL("").String())
-	require.Equal(t, "https://mytest.org/path?key=v1", unserializeURL("https://mytest.org/path?key=v1").String())
+	if want, have := "/", unserializeURL("").String(); want != have {
+		t.Fatalf("unexpected unserialized URL, want %q, have %q", want, have)
+	}
+
+	if want, have := "https://mytest.org/path?key=v1", unserializeURL("https://mytest.org/path?key=v1").String(); want != have {
+		t.Fatalf("unexpected unserialized URL, want %q, have %q", want, have)
+	}
 }
