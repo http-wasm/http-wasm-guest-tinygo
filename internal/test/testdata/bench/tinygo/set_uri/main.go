@@ -11,8 +11,13 @@ func main() {
 	handler.HandleRequestFn = setURI
 }
 
+var uri *url.URL
+
+func init() {
+	uri, _ = url.ParseRequestURI("/v1.0/hello")
+}
+
 func setURI(req api.Request, resp api.Response) (next bool, reqCtx uint32) {
-	u, _ := url.ParseRequestURI("/v1.0/hello")
-	req.SetURI(*u)
+	req.SetURI(uri)
 	return // this is a benchmark, so skip the next handler.
 }

@@ -25,14 +25,24 @@ func (wasmRequest) SetMethod(method string) {
 	imports.SetMethod(ptr, size)
 }
 
+func unserializeURL(u string) *url.URL {
+	if u != "" {
+		// we skip error parsing as the url string comes from a proper url.URL object
+		// hence error is unexpected
+		uri, _ := url.Parse(u)
+		return uri
+	}
+
+	return &url.URL{Path: "/"}
+}
+
 // GetURI implements the same method as documented on api.Request.
-func (wasmRequest) GetURI() url.URL {
-	u, _ := url.Parse(mem.GetString(imports.GetURI))
-	return *u
+func (wasmRequest) GetURI() *url.URL {
+	return unserializeURL(mem.GetString(imports.GetURI))
 }
 
 // SetURI implements the same method as documented on api.Request.
-func (wasmRequest) SetURI(uri url.URL) {
+func (wasmRequest) SetURI(uri *url.URL) {
 	ptr, size := mem.StringToPtr(uri.String())
 	imports.SetURI(ptr, size)
 }

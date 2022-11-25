@@ -104,10 +104,10 @@ type Request interface {
 	SetMethod(method string)
 
 	// GetURI returns the request URI.
-	GetURI() url.URL
+	GetURI() *url.URL
 
 	// SetURI overwrites the URI.
-	SetURI(uri url.URL)
+	SetURI(uri *url.URL)
 
 	// GetProtocolVersion returns the HTTP protocol version. Ex. "HTTP/1.1"
 	GetProtocolVersion() string
