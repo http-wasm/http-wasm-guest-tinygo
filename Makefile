@@ -50,13 +50,19 @@ format:
 	done
 	@go run $(goimports) -w -local github.com/http-wasm/http-wasm-guest-tinygo `find . -name '*.go'`
 
+PHONY: mod-tidy
+mod-tidy:
+	@find . -name "go.mod" \
+	| grep go.mod \
+	| xargs -I {} bash -c 'dirname {}' \
+	| xargs -I {} bash -c 'echo "=> {}"; cd {}; go mod tidy -v; '
+
+
 .PHONY: check
 check:
 	@$(MAKE) lint
 	@$(MAKE) format
-	@go mod tidy
-	@(cd internal; go mod tidy)
-	@(cd internal/e2e; go mod tidy)
+	@$(MAKE) mod-tidy
 	@if [ ! -z "`git status -s`" ]; then \
 		echo "The following differences will fail CI until committed:"; \
 		git diff --exit-code; \
