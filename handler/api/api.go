@@ -101,10 +101,16 @@ type Request interface {
 
 	// GetURI returns the request URI. Ex. "/v1.0/hi?name=panda"
 	//
+	// This is analogous to the URL property of http.Request when used server-side.
+	// Those who wish to use url.URL can parse this with url.ParseRequestURI.
+	//
 	// Note: The URI may include query parameters.
 	GetURI() string
 
 	// SetURI overwrites the URI.
+	//
+	// This is analogous to setting the URL property of http.Request when used server-side.
+	// Those who wish to use url.URL can generate it with url.URL.String.
 	//
 	// Note: The URI may include query parameters.
 	SetURI(uri string)
