@@ -186,20 +186,20 @@ func testConsole(t *testing.T, content []byte, logMessages []string, stdout, std
 	require.Equal(t, `{"hello": "world"}`, string(content))
 	require.Empty(t, stderr)
 	require.Equal(t, `POST /v1.0/hi?name=panda HTTP/1.1
-Accept-Encoding: gzip
-Content-Length: 18
-Content-Type: application/json
-Host: localhost
-User-Agent: Go-http-client/1.1
+accept-encoding: gzip
+content-length: 18
+content-type: application/json
+host: localhost
+user-agent: Go-http-client/1.1
 
 {"hello": "panda"}
 
 HTTP/1.1 200
-Content-Type: application/json
-Set-Cookie: a=b
-Set-Cookie: c=d
-Trailer: grpc-status
-Transfer-Encoding: chunked
+content-type: application/json
+set-cookie: a=b
+set-cookie: c=d
+trailer: grpc-status
+transfer-encoding: chunked
 
 {"hello": "world"}
 grpc-status: 1
