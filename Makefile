@@ -1,5 +1,5 @@
-goimports := golang.org/x/tools/cmd/goimports@v0.2.0
-golangci_lint := github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
+gosimports    := github.com/rinchsan/gosimports/cmd/gosimports@v0.3.7
+golangci_lint := github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.2
 
 .PHONY: testdata
 testdata:
@@ -48,7 +48,7 @@ format:
 	    awk '/^import \($$/,/^\)$$/{if($$0=="")next}{print}' $$f > /tmp/fmt; \
 	    mv /tmp/fmt $$f; \
 	done
-	@go run $(goimports) -w -local github.com/http-wasm/http-wasm-guest-tinygo `find . -name '*.go'`
+	@go run $(gosimports) -local github.com/http-wasm/http-wasm-guest-tinygo -w $(shell find . -name '*.go' -type f)
 
 .PHONY: check
 check:

@@ -1,3 +1,3 @@
 module github.com/http-wasm/http-wasm-guest-tinygo
 
-go 1.18
+go 1.19
