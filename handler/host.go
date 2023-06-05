@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"runtime"
+
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/imports"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/mem"
@@ -36,5 +38,6 @@ func (wasmHost) Log(level api.LogLevel, message string) {
 		return // don't incur host call overhead
 	}
 	ptr, size := mem.StringToPtr(message)
-	imports.Log(level, ptr, size)
+	imports.Log(level, uintptr(ptr), size)
+	runtime.KeepAlive(message) // keep message alive until ptr is no longer needed.
 }

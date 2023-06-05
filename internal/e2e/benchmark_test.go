@@ -7,9 +7,8 @@ import (
 	"net/http"
 	"testing"
 
-	nethttp "github.com/http-wasm/http-wasm-host-go/handler/nethttp"
-
 	"github.com/http-wasm/http-wasm-guest-tinygo/internal/test"
+	nethttp "github.com/http-wasm/http-wasm-host-go/handler/nethttp"
 )
 
 var (

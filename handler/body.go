@@ -2,7 +2,7 @@ package handler
 
 import (
 	"io"
-	"unsafe"
+	"runtime"
 
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/imports"
@@ -40,13 +40,14 @@ func (b wasmBody) WriteTo(w io.Writer) (written uint64, err error) {
 
 // ReadN implements the same method as documented on api.Body.
 func (b wasmBody) Read(bytes []byte) (size uint32, eof bool) {
-	limit := uint32(len(bytes))
-	if limit == 0 { // invalid, but prevent crashing.
-		return 0, false
+	ptr, limit := mem.SliceToPtr(bytes)
+	if limit == 0 {
+		return // invalid, but prevent crashing.
 	}
 
-	ptr := uintptr(unsafe.Pointer(&bytes[0])) // TODO: mem.SliceToPtr
-	return read(b, ptr, limit)
+	size, eof = read(b, uintptr(ptr), limit)
+	runtime.KeepAlive(bytes) // keep bytes alive until ptr is no longer needed.
+	return
 }
 
 func read(b wasmBody, ptr uintptr, limit imports.BufLimit) (size uint32, eof bool) {
@@ -58,21 +59,22 @@ func read(b wasmBody, ptr uintptr, limit imports.BufLimit) (size uint32, eof boo
 
 // Write implements the same method as documented on api.Body.
 func (b wasmBody) Write(bytes []byte) {
-	size := uint32(len(bytes))
-	if size == 0 { // invalid, but prevent crashing.
+	ptr, size := mem.SliceToPtr(bytes)
+	if size == 0 {
 		return
 	}
 
-	ptr := uintptr(unsafe.Pointer(&bytes[0])) // TODO: mem.SliceToPtr
-	imports.WriteBody(imports.BodyKind(b), ptr, size)
+	imports.WriteBody(imports.BodyKind(b), uintptr(ptr), size)
+	runtime.KeepAlive(bytes) // keep bytes alive until ptr is no longer needed.
 }
 
 // WriteString implements the same method as documented on api.Body.
 func (b wasmBody) WriteString(s string) {
 	ptr, size := mem.StringToPtr(s)
-	if size == 0 { // invalid, but prevent crashing.
+	if size == 0 {
 		return
 	}
 
-	imports.WriteBody(imports.BodyKind(b), ptr, size)
+	imports.WriteBody(imports.BodyKind(b), uintptr(ptr), size)
+	runtime.KeepAlive(s) // keep s alive until ptr is no longer needed.
 }
