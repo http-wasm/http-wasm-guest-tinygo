@@ -11,13 +11,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/http-wasm/http-wasm-host-go/api"
-	"github.com/http-wasm/http-wasm-host-go/handler"
-	nethttp "github.com/http-wasm/http-wasm-host-go/handler/nethttp"
 	"github.com/stretchr/testify/require"
 	"github.com/tetratelabs/wazero"
 
 	"github.com/http-wasm/http-wasm-guest-tinygo/internal/test"
+	"github.com/http-wasm/http-wasm-host-go/api"
+	"github.com/http-wasm/http-wasm-host-go/handler"
+	nethttp "github.com/http-wasm/http-wasm-host-go/handler/nethttp"
 )
 
 // testCtx is an arbitrary, non-default context. Non-nil also prevents linter errors.

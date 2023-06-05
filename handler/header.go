@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"runtime"
 	"unsafe"
 
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
@@ -30,9 +31,11 @@ func (w wasmHeader) Names() (names []string) {
 	}
 	// Otherwise, we have to allocate a new buffer for the large entry.
 	buf := make([]byte, size)
-	ptr := uintptr(unsafe.Pointer(&buf[0]))
-	_ = imports.GetHeaderNames(imports.HeaderKind(w), ptr, size)
-	return mem.GetNULTerminated(buf)
+	ptr := unsafe.Pointer(unsafe.SliceData(buf))
+	_ = imports.GetHeaderNames(imports.HeaderKind(w), uintptr(ptr), size)
+	names = mem.GetNULTerminated(buf)
+	runtime.KeepAlive(buf) // keep buf alive until ptr is no longer needed.
+	return
 }
 
 // Get implements the same method as documented on api.Request.
@@ -48,10 +51,12 @@ func (w wasmHeader) Get(name string) (value string, ok bool) {
 // GetAll implements the same method as documented on api.Request.
 func (w wasmHeader) GetAll(name string) (names []string) {
 	namePtr, nameSize := mem.StringToPtr(name)
-	countLen := imports.GetHeaderValues(imports.HeaderKind(w), namePtr, nameSize, mem.ReadBufPtr, mem.ReadBufLimit)
+	countLen := imports.GetHeaderValues(imports.HeaderKind(w), uintptr(namePtr), nameSize, mem.ReadBufPtr, mem.ReadBufLimit)
+	runtime.KeepAlive(name) // keep name alive until ptr is no longer needed.
 	if countLen == 0 {
 		return
 	}
+
 	size := uint32(countLen)
 	if size == 0 {
 		return
@@ -61,27 +66,35 @@ func (w wasmHeader) GetAll(name string) (names []string) {
 	}
 	// Otherwise, we have to allocate a new buffer for the large entry.
 	buf := make([]byte, size)
-	ptr := uintptr(unsafe.Pointer(&buf[0]))
-	_ = imports.GetHeaderValues(imports.HeaderKind(w), namePtr, nameSize, ptr, size)
-	return mem.GetNULTerminated(buf)
+	ptr := unsafe.Pointer(unsafe.SliceData(buf))
+	_ = imports.GetHeaderValues(imports.HeaderKind(w), uintptr(namePtr), nameSize, uintptr(ptr), size)
+	names = mem.GetNULTerminated(buf)
+	runtime.KeepAlive(name) // keep name alive until ptr is no longer needed.
+	runtime.KeepAlive(buf)  // keep buf alive until ptr is no longer needed.
+	return
 }
 
 // Set implements the same method as documented on api.Request.
 func (w wasmHeader) Set(name, value string) {
 	namePtr, nameSize := mem.StringToPtr(name)
 	valuePtr, valueSize := mem.StringToPtr(value)
-	imports.SetHeaderValue(imports.HeaderKind(w), namePtr, nameSize, valuePtr, valueSize)
+	imports.SetHeaderValue(imports.HeaderKind(w), uintptr(namePtr), nameSize, uintptr(valuePtr), valueSize)
+	runtime.KeepAlive(name)  // keep name alive until ptr is no longer needed.
+	runtime.KeepAlive(value) // keep value alive until ptr is no longer needed.
 }
 
 // Add implements the same method as documented on api.Request.
 func (w wasmHeader) Add(name, value string) {
 	namePtr, nameSize := mem.StringToPtr(name)
 	valuePtr, valueSize := mem.StringToPtr(value)
-	imports.AddHeaderValue(imports.HeaderKind(w), namePtr, nameSize, valuePtr, valueSize)
+	imports.AddHeaderValue(imports.HeaderKind(w), uintptr(namePtr), nameSize, uintptr(valuePtr), valueSize)
+	runtime.KeepAlive(name)  // keep name alive until ptr is no longer needed.
+	runtime.KeepAlive(value) // keep value alive until ptr is no longer needed.
 }
 
 // Remove implements the same method as documented on api.Request.
 func (w wasmHeader) Remove(name string) {
 	namePtr, nameSize := mem.StringToPtr(name)
-	imports.RemoveHeader(imports.HeaderKind(w), namePtr, nameSize)
+	imports.RemoveHeader(imports.HeaderKind(w), uintptr(namePtr), nameSize)
+	runtime.KeepAlive(name) // keep name alive until ptr is no longer needed.
 }

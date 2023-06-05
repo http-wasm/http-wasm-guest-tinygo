@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"runtime"
+
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/imports"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/mem"
@@ -20,7 +22,8 @@ func (wasmRequest) GetMethod() string {
 // SetMethod implements the same method as documented on api.Request.
 func (wasmRequest) SetMethod(method string) {
 	ptr, size := mem.StringToPtr(method)
-	imports.SetMethod(ptr, size)
+	imports.SetMethod(uintptr(ptr), size)
+	runtime.KeepAlive(method) // keep method alive until ptr is no longer needed.
 }
 
 // GetURI implements the same method as documented on api.Request.
@@ -31,7 +34,8 @@ func (wasmRequest) GetURI() string {
 // SetURI implements the same method as documented on api.Request.
 func (wasmRequest) SetURI(uri string) {
 	ptr, size := mem.StringToPtr(uri)
-	imports.SetURI(ptr, size)
+	imports.SetURI(uintptr(ptr), size)
+	runtime.KeepAlive(uri) // keep uri alive until ptr is no longer needed.
 }
 
 // GetProtocolVersion implements the same method as documented on api.Request.

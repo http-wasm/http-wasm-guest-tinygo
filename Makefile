@@ -1,5 +1,6 @@
-gosimports    := github.com/rinchsan/gosimports/cmd/gosimports@v0.3.7
-golangci_lint := github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.2
+gofumpt       := mvdan.cc/gofumpt@v0.5.0
+gosimports    := github.com/rinchsan/gosimports/cmd/gosimports@v0.3.8
+golangci_lint := github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2
 
 .PHONY: testdata
 testdata:
@@ -43,12 +44,8 @@ lint: $(golangci_lint_path)
 
 .PHONY: format
 format:
-	@find . -type f -name '*.go' | xargs gofmt -s -w
-	@for f in `find . -name '*.go'`; do \
-	    awk '/^import \($$/,/^\)$$/{if($$0=="")next}{print}' $$f > /tmp/fmt; \
-	    mv /tmp/fmt $$f; \
-	done
-	@go run $(gosimports) -local github.com/http-wasm/http-wasm-guest-tinygo -w $(shell find . -name '*.go' -type f)
+	@go run $(gofumpt) -l -w .
+	@go run $(gosimports) -local github.com/http-wasm/ -w $(shell find . -name '*.go' -type f)
 
 .PHONY: check
 check:

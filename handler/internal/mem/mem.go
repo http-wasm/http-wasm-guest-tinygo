@@ -1,6 +1,7 @@
 package mem
 
 import (
+	"runtime"
 	"unsafe"
 
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/imports"
@@ -15,50 +16,60 @@ var (
 	ReadBufLimit = uint32(2048)
 )
 
-// StringToPtr returns a pointer and size pair for the given string in a way
+// SliceToPtr returns a pointer and size pair for the given slice in a way
 // compatible with WebAssembly numeric types.
-func StringToPtr(s string) (uintptr, uint32) {
-	if s == "" {
-		return ReadBufPtr, 0
-	}
-	buf := []byte(s)
-	ptr := &buf[0]
-	unsafePtr := uintptr(unsafe.Pointer(ptr))
-	return unsafePtr, uint32(len(buf))
+// The returned pointer aliases the slice hence the slice must be kept alive
+// until ptr is no longer needed.
+func SliceToPtr(b []byte) (uint32, uint32) {
+	ptr := unsafe.Pointer(unsafe.SliceData(b))
+	return uint32(uintptr(ptr)), uint32(len(b))
 }
 
+// StringToPtr returns a pointer and size pair for the given string in a way
+// compatible with WebAssembly numeric types.
+// The returned pointer aliases the string hence the string must be kept alive
+// until ptr is no longer needed.
+func StringToPtr(s string) (uint32, uint32) {
+	ptr := unsafe.Pointer(unsafe.StringData(s))
+	return uint32(uintptr(ptr)), uint32(len(s))
+}
+
+// GetString copies a string from the bytes returned by fn, so that it can
+// safely be used without risk of corruption.
 func GetString(fn func(ptr uintptr, limit imports.BufLimit) (len uint32)) (result string) {
 	size := fn(ReadBufPtr, ReadBufLimit)
 	if size == 0 {
-		return
-	}
-	if size > 0 && size <= ReadBufLimit {
+		return // If nothing was read, return an empty string.
+	} else if size <= ReadBufLimit {
 		return string(ReadBuf[:size]) // string will copy the buffer.
 	}
 
 	// Otherwise, allocate a new string
 	buf := make([]byte, size)
-	ptr := uintptr(unsafe.Pointer(&buf[0]))
-	_ = fn(ptr, size)
-	s := unsafe.Slice((*byte)(unsafe.Pointer(ptr)), size)
-	return *(*string)(unsafe.Pointer(&s))
+	ptr := unsafe.Pointer(unsafe.SliceData(buf))
+	_ = fn(uintptr(ptr), size)
+	result = *(*string)(ptr) // don't return string(buf) as that copies buf.
+	runtime.KeepAlive(buf)   // keep buf alive until ptr is no longer needed.
+	return
 }
 
+// GetBytes copies the bytes returned by fn, so that they can safely be used
+// without risk of corruption.
 func GetBytes(fn func(ptr uintptr, limit imports.BufLimit) (len uint32)) (result []byte) {
 	size := fn(ReadBufPtr, ReadBufLimit)
 	if size == 0 {
-		return
-	}
-	if size > 0 && size <= ReadBufLimit {
-		// copy to avoid passing a mutable buffer
+		return // If nothing was read, return a nil slice.
+	} else if size <= ReadBufLimit {
+		// copy to avoid passing out our read buffer
 		result = make([]byte, size)
 		copy(result, ReadBuf)
 		return
 	}
-	buf := make([]byte, size)
-	ptr := uintptr(unsafe.Pointer(&buf[0]))
-	_ = fn(ptr, size)
-	return buf
+
+	result = make([]byte, size)
+	ptr := unsafe.Pointer(unsafe.SliceData(result))
+	_ = fn(uintptr(ptr), size)
+	return
 }
 
 func GetNULTerminated(b []byte) (entries []string) {
