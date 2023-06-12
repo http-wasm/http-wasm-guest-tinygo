@@ -22,7 +22,7 @@ func (wasmRequest) GetMethod() string {
 // SetMethod implements the same method as documented on api.Request.
 func (wasmRequest) SetMethod(method string) {
 	ptr, size := mem.StringToPtr(method)
-	imports.SetMethod(uintptr(ptr), size)
+	imports.SetMethod(ptr, size)
 	runtime.KeepAlive(method) // keep method alive until ptr is no longer needed.
 }
 
@@ -34,7 +34,7 @@ func (wasmRequest) GetURI() string {
 // SetURI implements the same method as documented on api.Request.
 func (wasmRequest) SetURI(uri string) {
 	ptr, size := mem.StringToPtr(uri)
-	imports.SetURI(uintptr(ptr), size)
+	imports.SetURI(ptr, size)
 	runtime.KeepAlive(uri) // keep uri alive until ptr is no longer needed.
 }
 

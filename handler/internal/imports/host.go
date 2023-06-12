@@ -111,7 +111,7 @@ func EnableFeatures(features api.Features) api.Features {
 	return enableFeatures(features)
 }
 
-func GetConfig(ptr uintptr, limit BufLimit) (len uint32) {
+func GetConfig(ptr uint32, limit BufLimit) (len uint32) {
 	return getConfig(ptr, limit)
 }
 
@@ -119,55 +119,55 @@ func LogEnabled(level api.LogLevel) uint32 {
 	return logEnabled(level)
 }
 
-func Log(level api.LogLevel, ptr uintptr, size uint32) {
+func Log(level api.LogLevel, ptr, size uint32) {
 	log(level, ptr, size)
 }
 
-func GetMethod(ptr uintptr, limit BufLimit) (len uint32) {
+func GetMethod(ptr uint32, limit BufLimit) (len uint32) {
 	return getMethod(ptr, limit)
 }
 
-func SetMethod(ptr uintptr, size uint32) {
+func SetMethod(ptr, size uint32) {
 	setMethod(ptr, size)
 }
 
-func GetURI(ptr uintptr, limit BufLimit) (len uint32) {
+func GetURI(ptr uint32, limit BufLimit) (len uint32) {
 	return getURI(ptr, limit)
 }
 
-func SetURI(ptr uintptr, size uint32) {
+func SetURI(ptr, size uint32) {
 	setURI(ptr, size)
 }
 
-func GetProtocolVersion(ptr uintptr, limit BufLimit) (len uint32) {
+func GetProtocolVersion(ptr uint32, limit BufLimit) (len uint32) {
 	return getProtocolVersion(ptr, limit)
 }
 
-func GetHeaderNames(kind HeaderKind, ptr uintptr, limit BufLimit) CountLen {
+func GetHeaderNames(kind HeaderKind, ptr uint32, limit BufLimit) CountLen {
 	return getHeaderNames(kind, ptr, limit)
 }
 
-func GetHeaderValues(kind HeaderKind, namePtr uintptr, nameSize uint32, bufPtr uintptr, bufLimit BufLimit) CountLen {
+func GetHeaderValues(kind HeaderKind, namePtr, nameSize uint32, bufPtr uint32, bufLimit BufLimit) CountLen {
 	return getHeaderValues(kind, namePtr, nameSize, bufPtr, bufLimit)
 }
 
-func SetHeaderValue(kind HeaderKind, namePtr uintptr, nameSize uint32, valuePtr uintptr, valueSize uint32) {
+func SetHeaderValue(kind HeaderKind, namePtr, nameSize uint32, valuePtr uint32, valueSize uint32) {
 	setHeaderValue(kind, namePtr, nameSize, valuePtr, valueSize)
 }
 
-func AddHeaderValue(kind HeaderKind, namePtr uintptr, nameSize uint32, valuePtr uintptr, valueSize uint32) {
+func AddHeaderValue(kind HeaderKind, namePtr, nameSize uint32, valuePtr uint32, valueSize uint32) {
 	addHeaderValue(kind, namePtr, nameSize, valuePtr, valueSize)
 }
 
-func RemoveHeader(kind HeaderKind, namePtr uintptr, nameSize uint32) {
+func RemoveHeader(kind HeaderKind, namePtr, nameSize uint32) {
 	removeHeader(kind, namePtr, nameSize)
 }
 
-func ReadBody(kind BodyKind, bufPtr uintptr, bufLimit BufLimit) EOFLen {
+func ReadBody(kind BodyKind, bufPtr uint32, bufLimit BufLimit) EOFLen {
 	return readBody(kind, bufPtr, bufLimit)
 }
 
-func WriteBody(kind BodyKind, bufPtr uintptr, bufSize uint32) {
+func WriteBody(kind BodyKind, bufPtr uint32, bufSize uint32) {
 	writeBody(kind, bufPtr, bufSize)
 }
 

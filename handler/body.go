@@ -45,12 +45,12 @@ func (b wasmBody) Read(bytes []byte) (size uint32, eof bool) {
 		return // invalid, but prevent crashing.
 	}
 
-	size, eof = read(b, uintptr(ptr), limit)
+	size, eof = read(b, ptr, limit)
 	runtime.KeepAlive(bytes) // keep bytes alive until ptr is no longer needed.
 	return
 }
 
-func read(b wasmBody, ptr uintptr, limit imports.BufLimit) (size uint32, eof bool) {
+func read(b wasmBody, ptr uint32, limit imports.BufLimit) (size uint32, eof bool) {
 	eofLen := imports.ReadBody(imports.BodyKind(b), ptr, limit)
 	eof = (eofLen >> 32) == 1
 	size = uint32(eofLen)
@@ -64,7 +64,7 @@ func (b wasmBody) Write(bytes []byte) {
 		return
 	}
 
-	imports.WriteBody(imports.BodyKind(b), uintptr(ptr), size)
+	imports.WriteBody(imports.BodyKind(b), ptr, size)
 	runtime.KeepAlive(bytes) // keep bytes alive until ptr is no longer needed.
 }
 
@@ -75,6 +75,6 @@ func (b wasmBody) WriteString(s string) {
 		return
 	}
 
-	imports.WriteBody(imports.BodyKind(b), uintptr(ptr), size)
+	imports.WriteBody(imports.BodyKind(b), ptr, size)
 	runtime.KeepAlive(s) // keep s alive until ptr is no longer needed.
 }

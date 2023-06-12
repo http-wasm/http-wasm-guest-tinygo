@@ -40,7 +40,7 @@ func handleRequest(req api.Request, resp api.Response) (next bool, reqCtx uint32
 }
 ```
 
-If you make changes, you can rebuild it like so:
+If you make changes, you can rebuild this with TinyGo v0.28 or higher like so:
 ```sh
 tinygo build -o examples/router/main.wasm -scheduler=none --no-debug -target=wasi examples/router/main.go
 ```
