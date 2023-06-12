@@ -11,7 +11,7 @@ var (
 	// ReadBuf is sharable because there is no parallelism in wasm.
 	ReadBuf = make([]byte, ReadBufLimit)
 	// ReadBufPtr is used to avoid duplicate host function calls.
-	ReadBufPtr = uintptr(unsafe.Pointer(&ReadBuf[0]))
+	ReadBufPtr = uint32(uintptr(unsafe.Pointer(&ReadBuf[0])))
 	// ReadBufLimit is constant memory overhead for reading fields.
 	ReadBufLimit = uint32(2048)
 )
@@ -36,7 +36,7 @@ func StringToPtr(s string) (uint32, uint32) {
 
 // GetString copies a string from the bytes returned by fn, so that it can
 // safely be used without risk of corruption.
-func GetString(fn func(ptr uintptr, limit imports.BufLimit) (len uint32)) (result string) {
+func GetString(fn func(ptr uint32, limit imports.BufLimit) (len uint32)) (result string) {
 	size := fn(ReadBufPtr, ReadBufLimit)
 	if size == 0 {
 		return // If nothing was read, return an empty string.
@@ -47,7 +47,7 @@ func GetString(fn func(ptr uintptr, limit imports.BufLimit) (len uint32)) (resul
 	// Otherwise, allocate a new string
 	buf := make([]byte, size)
 	ptr := unsafe.Pointer(unsafe.SliceData(buf))
-	_ = fn(uintptr(ptr), size)
+	_ = fn(uint32(uintptr(ptr)), size)
 	result = *(*string)(ptr) // don't return string(buf) as that copies buf.
 	runtime.KeepAlive(buf)   // keep buf alive until ptr is no longer needed.
 	return
@@ -55,7 +55,7 @@ func GetString(fn func(ptr uintptr, limit imports.BufLimit) (len uint32)) (resul
 
 // GetBytes copies the bytes returned by fn, so that they can safely be used
 // without risk of corruption.
-func GetBytes(fn func(ptr uintptr, limit imports.BufLimit) (len uint32)) (result []byte) {
+func GetBytes(fn func(ptr uint32, limit imports.BufLimit) (len uint32)) (result []byte) {
 	size := fn(ReadBufPtr, ReadBufLimit)
 	if size == 0 {
 		return // If nothing was read, return a nil slice.
@@ -68,7 +68,7 @@ func GetBytes(fn func(ptr uintptr, limit imports.BufLimit) (len uint32)) (result
 
 	result = make([]byte, size)
 	ptr := unsafe.Pointer(unsafe.SliceData(result))
-	_ = fn(uintptr(ptr), size)
+	_ = fn(uint32(uintptr(ptr)), size)
 	return
 }
 

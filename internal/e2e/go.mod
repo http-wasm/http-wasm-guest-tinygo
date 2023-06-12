@@ -1,6 +1,6 @@
 module github.com/http-wasm/http-wasm-guest-tinygo/e2e
 
-go 1.18
+go 1.20
 
 require (
 	github.com/http-wasm/http-wasm-guest-tinygo v0.0.0

@@ -38,6 +38,6 @@ func (wasmHost) Log(level api.LogLevel, message string) {
 		return // don't incur host call overhead
 	}
 	ptr, size := mem.StringToPtr(message)
-	imports.Log(level, uintptr(ptr), size)
+	imports.Log(level, ptr, size)
 	runtime.KeepAlive(message) // keep message alive until ptr is no longer needed.
 }
