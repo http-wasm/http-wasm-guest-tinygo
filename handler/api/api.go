@@ -48,47 +48,72 @@ type Host interface {
 	Log(LogLevel, string)
 }
 
-// HandleRequest is the entrypoint the Host calls when processing an HTTP
-// request. Default is to proceed to the next handler on the host.
-//
-// Implementations that construct a response locally should set `next=false`.
-// Otherwise, set `next=true` to proceed to the next handler on the host.
-// Handlers that require request correlation can optionally set reqCtx.
-// The host will propagate this value as the first parameter to HandleResponse.
-//
-// Here are some examples:
-//
-// Modify the incoming request:
-//
-//	func router(req Request, _ Response) (next bool, reqCtx uint32) {
-//		if req.GetURI() == "/v1.0/hi?name=panda" {
-//			req.SetURI("/v1.0/hello?name=teddy")
-//		}
-//		next = true
-//		return
-//	}
-//
-// Ex. To serve a response locally:
-//
-//	func hello(req Request, resp Response) (next bool, reqCtx uint32) {
-//		resp.Body().WriteString("hello world")
-//	}
-//
-// Return an empty 200 response
-//
-//	func noop(Request, Response) (next bool, reqCtx uint32) { }
-//
-// # Request Context
-//
-// Implementations who return `next=true` may also set request correlation
-// data as reqCtx. The host will propagate this to HandleResponse.
-type HandleRequest func(Request, Response) (next bool, reqCtx uint32)
+// Handler is what implements the HTTP request/response lifecycle.
+type Handler interface {
+	// HandleRequest is the entrypoint the Host calls when processing an HTTP
+	// request. Default is to proceed to the next handler on the host.
+	//
+	// Implementations that construct a response locally should set `next=false`.
+	// Otherwise, set `next=true` to proceed to the next handler on the host.
+	// Handlers that require request correlation can optionally set reqCtx.
+	// The host will propagate this value as the first parameter to HandleResponse.
+	//
+	// Here are some examples:
+	//
+	// Modify the incoming request:
+	//
+	//	type router struct {
+	//		api.UnimplementedHandler
+	//	}
+	//
+	//	func (router) HandleRequest(req api.Request, _ api.Response) (next bool, reqCtx uint32) {
+	//		if req.GetURI() == "/v1.0/hi?name=panda" {
+	//			req.SetURI("/v1.0/hello?name=teddy")
+	//		}
+	//		next = true
+	//		return
+	//	}
+	//
+	// Ex. To serve a response locally:
+	//
+	//	type hello struct {
+	//		api.UnimplementedHandler
+	//	}
+	//
+	//	func (hello) HandleRequest(_ api.Request, resp api.Response) (next bool, reqCtx uint32) {
+	//		resp.Body().WriteString("hello world")
+	//	}
+	//
+	// Return an empty 200 response
+	//
+	//	type noop struct {
+	//		api.UnimplementedHandler
+	//	}
+	//
+	//	func (noop) HandleRequest(api.Request, api.Response) (next bool, reqCtx uint32) { }
+	//
+	// # Request Context
+	//
+	// Implementations who return `next=true` may also set request correlation
+	// data as reqCtx. The host will propagate this to HandleResponse.
+	HandleRequest(Request, Response) (next bool, reqCtx uint32)
 
-// HandleResponse is invoked when HandleRequest returned `next=true`. Its
-// possibly zero `reqCtx` result is propagated here.
-//
-// `isError=true` when the host erred since returning from HandleRequest.
-type HandleResponse func(reqCtx uint32, req Request, resp Response, isError bool)
+	// HandleResponse is invoked when HandleRequest returned `next=true`. Its
+	// possibly zero `reqCtx` result is propagated here.
+	//
+	// `isError=true` when the host erred since returning from HandleRequest.
+	HandleResponse(reqCtx uint32, req Request, resp Response, isError bool)
+}
+
+// UnimplementedHandler calls the next handler.
+type UnimplementedHandler struct{}
+
+func (UnimplementedHandler) HandleRequest(Request, Response) (next bool, reqCtx uint32) {
+	next = true
+	return
+}
+
+func (UnimplementedHandler) HandleResponse(uint32, Request, Response, bool) {}
 
 // Request is the incoming HTTP request sent by the client or an upstream
 // handler.

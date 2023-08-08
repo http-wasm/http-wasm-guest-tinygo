@@ -52,7 +52,7 @@ func Test_EndToEnd(t *testing.T) {
 	tests := []testCase{
 		{
 			name:    "example router guest response",
-			bin:     test.BinExampleRouter,
+			bin:     test.BinExampleRouterPool,
 			request: get,
 			next: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				t.Fatal("host should not see this request")
@@ -67,7 +67,7 @@ func Test_EndToEnd(t *testing.T) {
 		},
 		{
 			name: "example router host response",
-			bin:  test.BinExampleRouter,
+			bin:  test.BinExampleRouterPool,
 			request: func(url string) (req *http.Request) {
 				req, _ = http.NewRequest(http.MethodGet, url+"/host", nil)
 				return
@@ -85,7 +85,7 @@ func Test_EndToEnd(t *testing.T) {
 		},
 		{
 			name:    "example wasi tinygo",
-			bin:     test.BinExampleWASI,
+			bin:     test.BinExampleWASIPool,
 			request: test.RequestExampleWASI,
 			next:    test.HandlerExampleWASI,
 			test:    testConsole,

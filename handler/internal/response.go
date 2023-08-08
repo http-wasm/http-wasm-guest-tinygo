@@ -1,15 +1,14 @@
-package handler
+package internal
 
 import (
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/imports"
 )
 
+var WasmResponse api.Response = wasmResponse{}
+
 // wasmResponse implements api.Response with imported WebAssembly functions.
 type wasmResponse struct{}
-
-// compile-time check to ensure wasmResponse implements api.Response.
-var _ api.Response = wasmResponse{}
 
 // GetStatusCode implements the same method as documented on api.Response.
 func (r wasmResponse) GetStatusCode() uint32 {

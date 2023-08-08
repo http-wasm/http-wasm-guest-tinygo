@@ -8,6 +8,14 @@ import (
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/mem"
 )
 
+// Host is the current host that invokes HandleRequestFn.
+var Host api.Host = wasmHost{}
+
+// Log is a convenience that calls Host then Log.
+func Log(level api.LogLevel, msg string) {
+	Host.Log(level, msg)
+}
+
 // wasmHost implements api.Host with imported WebAssembly functions.
 type wasmHost struct{}
 

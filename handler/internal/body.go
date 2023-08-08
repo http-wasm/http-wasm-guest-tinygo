@@ -1,4 +1,4 @@
-package handler
+package internal
 
 import (
 	"io"

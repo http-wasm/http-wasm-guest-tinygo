@@ -81,15 +81,31 @@ var BinBenchSetStatusCodeTinyGo []byte
 //go:embed testdata/bench/wat/set_status_code.wasm
 var BinBenchSetStatusCodeWat []byte
 
-var BinExampleRouter = func() []byte {
-	return binExample("router")
+var BinExampleRouterPool = func() []byte {
+	return binExample(path.Join("router", "pool"))
+}()
+
+var BinExampleRouterOnceGo = func() []byte {
+	return tryCompileGotipExample(path.Join("router", "once"))
+}()
+
+var BinExampleRouterOnceTinyGo = func() []byte {
+	return binExample(path.Join("router", "once"))
 }()
 
 //go:embed testdata/e2e/wat/router.wasm
 var BinExampleRouterWat []byte
 
-var BinExampleWASI = func() []byte {
-	return binExample("wasi")
+var BinExampleWASIPool = func() []byte {
+	return binExample(path.Join("wasi", "pool"))
+}()
+
+var BinExampleWASIOnceGo = func() []byte {
+	return tryCompileGotipExample(path.Join("wasi", "once"))
+}()
+
+var BinExampleWASIOnceTinyGo = func() []byte {
+	return binExample(path.Join("wasi", "once"))
 }()
 
 //go:embed testdata/e2e/wat/wasi.wasm

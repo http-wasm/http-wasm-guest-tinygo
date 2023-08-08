@@ -1,4 +1,4 @@
-package handler
+package internal
 
 import (
 	"runtime"
@@ -8,11 +8,10 @@ import (
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/internal/mem"
 )
 
+var WasmRequest api.Request = wasmRequest{}
+
 // wasmRequest implements api.Request with imported WebAssembly functions.
 type wasmRequest struct{}
-
-// compile-time check to ensure wasmRequest implements api.Request.
-var _ api.Request = wasmRequest{}
 
 // GetMethod implements the same method as documented on api.Request.
 func (wasmRequest) GetMethod() string {

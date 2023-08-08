@@ -3,21 +3,21 @@ package main
 import (
 	httpwasm "github.com/http-wasm/http-wasm-guest-tinygo/handler"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
+	"github.com/http-wasm/http-wasm-guest-tinygo/handler/pool"
 )
 
 func main() {
-	httpwasm.HandleRequestFn = logBefore
-	httpwasm.HandleResponseFn = logAfter
+	pool.SetHandler(log{})
 }
 
-var log = httpwasm.Host.Log
+type log struct{}
 
-func logBefore(api.Request, api.Response) (next bool, reqCtx uint32) {
-	log(api.LogLevelInfo, "before")
+func (log) HandleRequest(api.Request, api.Response) (next bool, reqCtx uint32) {
+	httpwasm.Log(api.LogLevelInfo, "before")
 	next = true
 	return
 }
 
-func logAfter(uint32, api.Request, api.Response, bool) {
-	log(api.LogLevelInfo, "after")
+func (log) HandleResponse(uint32, api.Request, api.Response, bool) {
+	httpwasm.Log(api.LogLevelInfo, "after")
 }

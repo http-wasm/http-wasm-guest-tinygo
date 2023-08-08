@@ -5,6 +5,7 @@ import (
 	"context"
 	_ "embed"
 	"net/http"
+	"sort"
 	"testing"
 
 	"github.com/http-wasm/http-wasm-guest-tinygo/internal/test"
@@ -72,16 +73,20 @@ var benches = map[string]struct {
 }{
 	"example wasi": {
 		bins: map[string][]byte{
-			"TinyGo": test.BinExampleWASI,
-			"wat":    test.BinExampleWASIWat,
+			"Go once":     test.BinExampleWASIOnceGo,
+			"TinyGo pool": test.BinExampleWASIPool,
+			"TinyGo once": test.BinExampleWASIOnceTinyGo,
+			"wat":         test.BinExampleWASIWat,
 		},
 		next:    test.HandlerExampleWASI,
 		request: test.RequestExampleWASI,
 	},
 	"example router host response": {
 		bins: map[string][]byte{
-			"TinyGo": test.BinExampleRouter,
-			"wat":    test.BinExampleRouterWat,
+			"Go once":     test.BinExampleRouterOnceGo,
+			"TinyGo pool": test.BinExampleRouterPool,
+			"TinyGo once": test.BinExampleRouterOnceTinyGo,
+			"wat":         test.BinExampleRouterWat,
 		},
 		request: func(url string) (req *http.Request) {
 			req, _ = http.NewRequest(http.MethodGet, url+"/host", nil)
@@ -90,8 +95,10 @@ var benches = map[string]struct {
 	},
 	"example router wasm response": {
 		bins: map[string][]byte{
-			"TinyGo": test.BinExampleRouter,
-			"wat":    test.BinExampleRouterWat,
+			"Go once":     test.BinExampleRouterOnceGo,
+			"TinyGo pool": test.BinExampleRouterPool,
+			"TinyGo once": test.BinExampleRouterOnceTinyGo,
+			"wat":         test.BinExampleRouterWat,
 		},
 		request: func(url string) (req *http.Request) {
 			req, _ = http.NewRequest(http.MethodGet, url, nil)
@@ -237,8 +244,17 @@ func Benchmark(b *testing.B) {
 	for n, s := range benches {
 		s := s
 		b.Run(n, func(b *testing.B) {
-			for n, bin := range s.bins {
-				benchmark(b, n, bin, s.next, s.request)
+			binNames := make([]string, 0, len(s.bins))
+			for k := range s.bins {
+				binNames = append(binNames, k)
+			}
+
+			sort.Strings(binNames)
+			for _, k := range binNames {
+				bin := s.bins[k]
+				if bin != nil { // possible when missing gotip
+					benchmark(b, k, bin, s.next, s.request)
+				}
 			}
 		})
 	}

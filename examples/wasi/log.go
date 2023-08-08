@@ -1,4 +1,4 @@
-package main
+package log
 
 import (
 	"io"
@@ -6,28 +6,29 @@ import (
 	"strconv"
 	"strings"
 
-	httpwasm "github.com/http-wasm/http-wasm-guest-tinygo/handler"
+	"github.com/http-wasm/http-wasm-guest-tinygo/handler"
 	"github.com/http-wasm/http-wasm-guest-tinygo/handler/api"
 )
 
-// main ensures buffering is available on the host.
+// init ensures buffering is available on the host.
 //
 // Note: required features does not include api.FeatureTrailers because some
 // hosts don't support them, and the impact is minimal for logging.
-func main() {
+func init() {
 	requiredFeatures := api.FeatureBufferRequest | api.FeatureBufferResponse
-	if want, have := requiredFeatures, httpwasm.Host.EnableFeatures(requiredFeatures); !have.IsEnabled(want) {
+	if want, have := requiredFeatures, handler.Host.EnableFeatures(requiredFeatures); !have.IsEnabled(want) {
 		panic("unexpected features, want: " + want.String() + ", have: " + have.String())
 	}
-	httpwasm.HandleRequestFn = handleRequest
-	httpwasm.HandleResponseFn = handleResponse
 }
 
-// handleRequest prints HTTP requests and responses to the console using os.Stdout.
+// Handler prints HTTP requests and responses to the console using os.Stdout.
 //
 // Note: Internally, TinyGo uses WASI to implement os.Stdout. For example,
 // writing is a call to the imported function `fd_write`.
-func handleRequest(req api.Request, _ api.Response) (next bool, reqCtx uint32) {
+type Handler struct{}
+
+// HandleRequest implements the same method as documented on api.Handler
+func (Handler) HandleRequest(req api.Request, _ api.Response) (next bool, reqCtx uint32) {
 	// Print the incoming request to the console.
 	printRequestLine(req)
 	printHeaders(req.Headers())
@@ -38,7 +39,8 @@ func handleRequest(req api.Request, _ api.Response) (next bool, reqCtx uint32) {
 	return
 }
 
-func handleResponse(_ uint32, req api.Request, resp api.Response, isError bool) {
+// HandleResponse implements the same method as documented on api.Handler
+func (Handler) HandleResponse(_ uint32, req api.Request, resp api.Response, isError bool) {
 	println()
 
 	if isError {
