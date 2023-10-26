@@ -57,3 +57,8 @@ func (wasmRequest) Body() api.Body {
 func (wasmRequest) Trailers() api.Header {
 	return wasmRequestTrailers
 }
+
+// GetRemoteAddr implements the same method as documented on api.Request.
+func (wasmRequest) GetRemoteAddr() string {
+	return mem.GetString(imports.GetRemoteAddr)
+}
