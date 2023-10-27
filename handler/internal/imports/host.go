@@ -179,6 +179,6 @@ func SetStatusCode(statusCode uint32) {
 	setStatusCode(statusCode)
 }
 
-func GetRemoteAddr(ptr uint32, limit BufLimit) (len uint32) {
-	return getRemoteAddr(ptr, limit)
+func GetSourceAddr(ptr uint32, limit BufLimit) (len uint32) {
+	return getSourceAddr(ptr, limit)
 }

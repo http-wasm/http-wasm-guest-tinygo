@@ -78,7 +78,7 @@ func getStatusCode() uint32 {
 // setStatusCode is stubbed for compilation outside TinyGo.
 func setStatusCode(statusCode uint32) {}
 
-// getRemoteAddr is stubbed for compilation outside TinyGo.
-func getRemoteAddr(ptr uint32, limit BufLimit) (len uint32) {
+// getSourceAddr is stubbed for compilation outside TinyGo.
+func getSourceAddr(ptr uint32, limit BufLimit) (len uint32) {
 	return 0
 }
