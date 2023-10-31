@@ -57,3 +57,6 @@ func getStatusCode() uint32
 
 //go:wasmimport http_handler set_status_code
 func setStatusCode(statusCode uint32)
+
+//go:wasmimport http_handler get_source_addr
+func getSourceAddr(ptr uint32, limit BufLimit) (len uint32)

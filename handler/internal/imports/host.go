@@ -178,3 +178,7 @@ func GetStatusCode() uint32 {
 func SetStatusCode(statusCode uint32) {
 	setStatusCode(statusCode)
 }
+
+func GetSourceAddr(ptr uint32, limit BufLimit) (len uint32) {
+	return getSourceAddr(ptr, limit)
+}

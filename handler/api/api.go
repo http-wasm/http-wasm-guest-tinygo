@@ -121,6 +121,9 @@ type Request interface {
 	// Headers allows access to any incoming request headers.
 	Headers() Header
 
+	// GetSourceAddr returns client SourceAddr.
+	GetSourceAddr() string
+
 	// Body allows access to any incoming request body. To read this without
 	// preventing the Next from reading it, enable FeatureBufferRequest.
 	Body() Body

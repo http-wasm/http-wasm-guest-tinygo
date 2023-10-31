@@ -57,3 +57,8 @@ func (wasmRequest) Body() api.Body {
 func (wasmRequest) Trailers() api.Header {
 	return wasmRequestTrailers
 }
+
+// GetSourceAddr implements the same method as documented on api.Request.
+func (wasmRequest) GetSourceAddr() string {
+	return mem.GetString(imports.GetSourceAddr)
+}
