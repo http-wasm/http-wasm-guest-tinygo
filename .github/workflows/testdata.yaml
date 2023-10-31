@@ -27,16 +27,17 @@ jobs:
     strategy:
       matrix:
         go-version:  # Note: Go only supports 2 versions: https://go.dev/doc/devel/release#policy
-          - "1.20"
+          - "1.21"
         tinygo-version:  # Note: TinyGo only supports latest: https://github.com/tinygo-org/tinygo/releases
-          - "0.28.1"  # Latest
+          - "0.30.0"  # Latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
+          cache: false
 
       - name: "Set up TinyGo"
         run: |  # Installing via curl so commands are similar on OS/x
